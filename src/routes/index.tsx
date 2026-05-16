@@ -91,7 +91,7 @@ function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-24 bg-card/30 border-y border-border/30">
+      <section className="py-24 bg-card border-y border-border/30">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
             <div className="text-xs uppercase tracking-[0.3em] text-gold">Come funziona</div>
