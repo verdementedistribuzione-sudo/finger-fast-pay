@@ -121,6 +121,11 @@
   .radial-gold { background: var(--gradient-radial-gold); }
   .hairline { border-top: 1px solid oklch(0.78 0.13 78 / 20%); }
   .glass {
+    background: oklch(1 0 0 / 70%);
+    backdrop-filter: blur(20px);
+    border: 1px solid oklch(0.88 0.005 80 / 60%);
+  }
+  .glass-dark {
     background: oklch(0.16 0.008 60 / 60%);
     backdrop-filter: blur(20px);
     border: 1px solid oklch(0.78 0.13 78 / 15%);
@@ -129,7 +134,7 @@
     content: "";
     position: absolute; inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity: 0.04; pointer-events: none; mix-blend-mode: overlay;
+    opacity: 0.02; pointer-events: none; mix-blend-mode: overlay;
   }
   @keyframes pulse-gold {
     0%, 100% { opacity: 0.4; transform: scale(1); }
