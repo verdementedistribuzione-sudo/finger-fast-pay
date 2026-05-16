@@ -41,7 +41,6 @@ function Register() {
       // Store PIN hash + default user role
       const pinHash = await hashPin(data.user.id, pin);
       await supabase.from("profiles").update({ pin_hash: pinHash }).eq("id", data.user.id);
-      await supabase.from("user_roles").insert({ user_id: data.user.id, role: "user" });
 
       const supported = await isBiometricSupported();
       if (supported) setStep("biometric");
