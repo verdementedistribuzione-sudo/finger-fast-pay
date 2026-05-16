@@ -6,10 +6,10 @@ export function SiteNav() {
     <header className="fixed top-0 inset-x-0 z-50 glass">
       <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded bg-foreground p-1 flex items-center justify-center">
-            <img src={logo} alt="FingerPay" className="h-full w-full object-contain invert-0" />
+          <div className="h-8 w-8 rounded bg-foreground/90 p-1 flex items-center justify-center">
+            <img src={logo} alt="FingerPay" className="h-full w-full object-contain invert" />
           </div>
-          <span className="font-display text-xl tracking-tight">FingerPay</span>
+          <span className="font-display text-xl tracking-tight text-foreground">FingerPay</span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           <Link to="/technology" className="hover:text-gold transition">Tecnologia</Link>

@@ -24,8 +24,8 @@ function Home() {
       {/* HERO */}
       <section className="relative pt-32 pb-24 overflow-hidden noise">
         <div className="absolute inset-0 -z-10">
-          <img src={heroImg} alt="" className="w-full h-full object-cover opacity-50" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+          <img src={heroImg} alt="" className="w-full h-full object-cover opacity-40" width={1920} height={1080} />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
 
         <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-12 gap-12 items-center">
@@ -91,7 +91,7 @@ function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-24 bg-card/30 border-y border-border/30">
+      <section className="py-24 bg-card border-y border-border/30">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
             <div className="text-xs uppercase tracking-[0.3em] text-gold">Come funziona</div>
@@ -157,8 +157,8 @@ function Home() {
       {/* SECURITY */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <img src={securityBg} alt="" loading="lazy" width={1536} height={800} className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+          <img src={securityBg} alt="" loading="lazy" width={1536} height={800} className="w-full h-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
         </div>
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl mx-auto text-center">
@@ -187,7 +187,7 @@ function Home() {
               </div>
             ))}
           </div>
-          <div className="mt-12 p-6 rounded-2xl border border-gold/20 bg-card/40 max-w-3xl mx-auto">
+          <div className="mt-12 p-6 rounded-2xl border border-gold/20 bg-card max-w-3xl mx-auto">
             <div className="text-xs uppercase tracking-widest text-gold">Nota normativa</div>
             <p className="mt-2 text-sm text-muted-foreground">
               Due dita costituiscono <span className="text-foreground">autenticazione biometrica rafforzata</span>,
