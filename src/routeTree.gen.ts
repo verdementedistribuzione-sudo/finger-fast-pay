@@ -12,9 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TechnologyRouteImport } from './routes/technology'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as MerchantsRouteImport } from './routes/merchants'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as InvestorsRouteImport } from './routes/investors'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppWalletRouteImport } from './routes/_app.wallet'
+import { Route as AppPayRouteImport } from './routes/_app.pay'
+import { Route as AppCardsRouteImport } from './routes/_app.cards'
 
 const TechnologyRoute = TechnologyRouteImport.update({
   id: '/technology',
@@ -31,9 +37,19 @@ const RoadmapRoute = RoadmapRouteImport.update({
   path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MerchantsRoute = MerchantsRouteImport.update({
   id: '/merchants',
   path: '/merchants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorsRoute = InvestorsRouteImport.update({
@@ -41,68 +57,122 @@ const InvestorsRoute = InvestorsRouteImport.update({
   path: '/investors',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppWalletRoute = AppWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayRoute = AppPayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCardsRoute = AppCardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/investors': typeof InvestorsRoute
+  '/login': typeof LoginRoute
   '/merchants': typeof MerchantsRoute
+  '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/cards': typeof AppCardsRoute
+  '/pay': typeof AppPayRoute
+  '/wallet': typeof AppWalletRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/investors': typeof InvestorsRoute
+  '/login': typeof LoginRoute
   '/merchants': typeof MerchantsRoute
+  '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/cards': typeof AppCardsRoute
+  '/pay': typeof AppPayRoute
+  '/wallet': typeof AppWalletRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
   '/investors': typeof InvestorsRoute
+  '/login': typeof LoginRoute
   '/merchants': typeof MerchantsRoute
+  '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/_app/cards': typeof AppCardsRoute
+  '/_app/pay': typeof AppPayRoute
+  '/_app/wallet': typeof AppWalletRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/investors'
+    | '/login'
     | '/merchants'
+    | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/cards'
+    | '/pay'
+    | '/wallet'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/investors'
+    | '/login'
     | '/merchants'
+    | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/cards'
+    | '/pay'
+    | '/wallet'
   id:
     | '__root__'
     | '/'
+    | '/_app'
     | '/investors'
+    | '/login'
     | '/merchants'
+    | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/_app/cards'
+    | '/_app/pay'
+    | '/_app/wallet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   InvestorsRoute: typeof InvestorsRoute
+  LoginRoute: typeof LoginRoute
   MerchantsRoute: typeof MerchantsRoute
+  RegisterRoute: typeof RegisterRoute
   RoadmapRoute: typeof RoadmapRoute
   SecurityRoute: typeof SecurityRoute
   TechnologyRoute: typeof TechnologyRoute
@@ -131,11 +201,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/merchants': {
       id: '/merchants'
       path: '/merchants'
       fullPath: '/merchants'
       preLoaderRoute: typeof MerchantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investors': {
@@ -145,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -152,13 +243,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/wallet': {
+      id: '/_app/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AppWalletRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pay': {
+      id: '/_app/pay'
+      path: '/pay'
+      fullPath: '/pay'
+      preLoaderRoute: typeof AppPayRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cards': {
+      id: '/_app/cards'
+      path: '/cards'
+      fullPath: '/cards'
+      preLoaderRoute: typeof AppCardsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppCardsRoute: typeof AppCardsRoute
+  AppPayRoute: typeof AppPayRoute
+  AppWalletRoute: typeof AppWalletRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCardsRoute: AppCardsRoute,
+  AppPayRoute: AppPayRoute,
+  AppWalletRoute: AppWalletRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   InvestorsRoute: InvestorsRoute,
+  LoginRoute: LoginRoute,
   MerchantsRoute: MerchantsRoute,
+  RegisterRoute: RegisterRoute,
   RoadmapRoute: RoadmapRoute,
   SecurityRoute: SecurityRoute,
   TechnologyRoute: TechnologyRoute,
