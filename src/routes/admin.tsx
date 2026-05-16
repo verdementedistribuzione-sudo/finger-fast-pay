@@ -236,3 +236,85 @@ function AuditTab() {
     </div>
   );
 }
+
+function ScaAuditTab() {
+  type Row = {
+    id: string;
+    user_id: string;
+    transaction_id: string | null;
+    step: string;
+    method: string;
+    outcome: string;
+    reason: string | null;
+    created_at: string;
+  };
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("biometric_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(300)
+      .then(({ data }) => {
+        setRows((data || []) as Row[]);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-muted-foreground">Caricamento…</div>;
+
+  return (
+    <div className="rounded-3xl border border-border bg-card overflow-hidden">
+      <div className="p-4 border-b border-border text-xs text-muted-foreground">
+        Solo esito e timestamp delle scansioni. <strong>Nessun dato biometrico</strong> è registrato.
+      </div>
+      <table className="w-full text-sm">
+        <thead className="bg-secondary/50 text-xs uppercase tracking-widest text-muted-foreground">
+          <tr>
+            <th className="text-left p-4">Quando</th>
+            <th className="text-left p-4">Utente</th>
+            <th className="text-left p-4">Step</th>
+            <th className="text-left p-4">Metodo</th>
+            <th className="text-left p-4">Esito</th>
+            <th className="text-left p-4">Transazione</th>
+            <th className="text-left p-4">Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                Nessuna verifica registrata.
+              </td>
+            </tr>
+          )}
+          {rows.map((r) => (
+            <tr key={r.id} className="border-t border-border">
+              <td className="p-4 text-muted-foreground">{new Date(r.created_at).toLocaleString("it-IT")}</td>
+              <td className="p-4 font-mono text-xs">{r.user_id.slice(0, 8)}…</td>
+              <td className="p-4">{r.step}</td>
+              <td className="p-4 uppercase tracking-widest text-xs text-muted-foreground">{r.method}</td>
+              <td className="p-4">
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full ${
+                    r.outcome === "success"
+                      ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30"
+                      : "bg-red-500/10 text-red-600 border border-red-500/30"
+                  }`}
+                >
+                  {r.outcome}
+                </span>
+              </td>
+              <td className="p-4 font-mono text-xs text-muted-foreground">
+                {r.transaction_id ? r.transaction_id.slice(0, 8) + "…" : "—"}
+              </td>
+              <td className="p-4 text-xs text-muted-foreground">{r.reason || "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
