@@ -28,6 +28,15 @@ type Tx = {
   created_at: string;
 };
 
+type AuditRow = {
+  id: string;
+  step: string;
+  method: string;
+  outcome: string;
+  reason: string | null;
+  created_at: string;
+};
+
 const DOC_TYPES = [
   { v: "id", label: "Documento d'identità" },
   { v: "passport", label: "Passaporto" },
@@ -41,16 +50,19 @@ function WalletPage() {
   const { user } = useAuth();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [txs, setTxs] = useState<Tx[]>([]);
+  const [audit, setAudit] = useState<AuditRow[]>([]);
   const [adding, setAdding] = useState(false);
 
   async function load() {
     if (!user) return;
-    const [{ data: d }, { data: t }] = await Promise.all([
+    const [{ data: d }, { data: t }, { data: a }] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
       supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(10),
+      supabase.from("biometric_audit").select("*").order("created_at", { ascending: false }).limit(20),
     ]);
     setDocs(d || []);
     setTxs(t || []);
+    setAudit((a || []) as AuditRow[]);
   }
 
   useEffect(() => {
