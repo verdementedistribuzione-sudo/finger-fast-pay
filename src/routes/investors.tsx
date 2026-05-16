@@ -89,7 +89,7 @@ function Investors() {
 
       {/* Why now */}
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="rounded-3xl border border-gold/20 p-10 glass">
+        <div className="rounded-3xl border border-gold/20 p-10 bg-card">
           <h2 className="font-display text-4xl">Perché ora</h2>
           <div className="mt-6 grid md:grid-cols-2 gap-6 text-muted-foreground">
             <p>Sensori biometrici sotto i €4/unità. Liveness detection ML in real-time. PSD2 SCA maturato e implementato.</p>
