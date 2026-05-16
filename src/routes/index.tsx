@@ -157,8 +157,8 @@ function Home() {
       {/* SECURITY */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <img src={securityBg} alt="" loading="lazy" width={1536} height={800} className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+          <img src={securityBg} alt="" loading="lazy" width={1536} height={800} className="w-full h-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
         </div>
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl mx-auto text-center">
