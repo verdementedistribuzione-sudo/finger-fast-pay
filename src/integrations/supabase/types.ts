@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          id: number
+          require_pin_above_threshold: boolean
+          sca_threshold: number
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          require_pin_above_threshold?: boolean
+          sca_threshold?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          require_pin_above_threshold?: boolean
+          sca_threshold?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string
@@ -86,24 +107,72 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          amount: number
+          authorized_at: string | null
+          created_at: string
+          currency: string
+          expires_at: string
+          id: string
+          merchant_name: string
+          merchant_ref: string | null
+          status: string
+          token: string | null
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          authorized_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          merchant_name: string
+          merchant_ref?: string | null
+          status?: string
+          token?: string | null
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          authorized_at?: string | null
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          merchant_name?: string
+          merchant_ref?: string | null
+          status?: string
+          token?: string | null
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          pin_hash: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          pin_hash?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          pin_hash?: string | null
         }
         Relationships: []
       }
@@ -151,15 +220,69 @@ export type Database = {
           },
         ]
       }
+      user_devices: {
+        Row: {
+          created_at: string
+          credential_id: string | null
+          id: string
+          label: string
+          last_used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credential_id?: string | null
+          id?: string
+          label: string
+          last_used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string | null
+          id?: string
+          label?: string
+          last_used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -286,6 +409,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
