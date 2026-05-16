@@ -18,12 +18,15 @@ export function SiteNav() {
           <Link to="/roadmap" className="hover:text-gold transition">Roadmap</Link>
           <Link to="/investors" className="hover:text-gold transition">Investitori</Link>
         </div>
-        <Link
-          to="/merchants"
-          className="px-4 py-2 text-sm rounded-full bg-gradient-gold text-primary-foreground font-medium hover:shadow-gold transition"
-        >
-          Dashboard
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground">Accedi</Link>
+          <Link
+            to="/wallet"
+            className="px-4 py-2 text-sm rounded-full bg-gradient-gold text-primary-foreground font-medium hover:shadow-gold transition"
+          >
+            Apri l'app
+          </Link>
+        </div>
       </nav>
     </header>
   );
