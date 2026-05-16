@@ -38,7 +38,7 @@ function Security() {
       </section>
 
       <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="rounded-3xl border border-gold/30 bg-gradient-to-br from-gold/5 to-transparent p-10">
+        <div className="rounded-3xl border border-gold/20 bg-card p-10">
           <div className="text-xs uppercase tracking-widest text-gold">Precisazione regolamentare</div>
           <h3 className="mt-3 font-display text-3xl">Due dita ≠ SCA</h3>
           <p className="mt-4 text-muted-foreground leading-relaxed">

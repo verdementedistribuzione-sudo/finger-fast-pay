@@ -187,7 +187,7 @@ function Home() {
               </div>
             ))}
           </div>
-          <div className="mt-12 p-6 rounded-2xl border border-gold/20 bg-card/40 max-w-3xl mx-auto">
+          <div className="mt-12 p-6 rounded-2xl border border-gold/20 bg-card max-w-3xl mx-auto">
             <div className="text-xs uppercase tracking-widest text-gold">Nota normativa</div>
             <p className="mt-2 text-sm text-muted-foreground">
               Due dita costituiscono <span className="text-foreground">autenticazione biometrica rafforzata</span>,
