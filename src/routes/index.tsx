@@ -24,8 +24,8 @@ function Home() {
       {/* HERO */}
       <section className="relative pt-32 pb-24 overflow-hidden noise">
         <div className="absolute inset-0 -z-10">
-          <img src={heroImg} alt="" className="w-full h-full object-cover opacity-50" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+          <img src={heroImg} alt="" className="w-full h-full object-cover opacity-40" width={1920} height={1080} />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
 
         <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-12 gap-12 items-center">
