@@ -163,45 +163,57 @@ function PayPage() {
           </form>
         )}
 
-        {step === "first" && (
+        {(step === "first" || step === "sca") && (
           <div className="text-center py-6">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">
-              {aboveThreshold ? "Passo 1 di 2 — Sblocca identità" : "Autorizza pagamento"}
+            <div className="text-xs uppercase tracking-widest text-gold">
+              {aboveThreshold ? `Passo ${step === "first" ? 1 : 2} di 2` : "Autorizza pagamento"}
             </div>
-            <button onClick={firstFinger} disabled={loading}
-              className="mt-8 mx-auto h-32 w-32 rounded-full bg-gradient-gold/10 border-2 border-gold flex items-center justify-center hover:scale-105 transition active:scale-95 disabled:opacity-50">
-              {loading ? <Loader2 className="h-10 w-10 text-gold animate-spin" /> : <Fingerprint className="h-14 w-14 text-gold" />}
-            </button>
+
+            {/* Grafico delle due impronte acquisite dall'hardware del device */}
+            <div className="mt-6 flex items-center justify-center gap-6">
+              <FingerprintScan state={scan1} label="Dito 1 · identità" size={130} />
+              {aboveThreshold && !requirePin && (
+                <FingerprintScan state={scan2} label="Dito 2 · autorizz." size={130} />
+              )}
+            </div>
+
             <div className="mt-6 font-display text-3xl">€ {Number(amount).toFixed(2)}</div>
             <div className="text-sm text-muted-foreground">{merchant}</div>
-            <p className="mt-6 text-xs text-muted-foreground">Tocca il sensore con il tuo dito.</p>
-          </div>
-        )}
 
-        {step === "sca" && (
-          <div className="text-center py-6">
-            <div className="text-xs uppercase tracking-widest text-gold">Passo 2 di 2 — SCA</div>
-            {requirePin ? (
-              <>
-                <KeyRound className="h-10 w-10 text-gold mx-auto mt-6" />
-                <p className="mt-4 text-sm text-muted-foreground">Conferma con il tuo PIN.</p>
+            {step === "first" && (
+              <button onClick={firstFinger} disabled={loading}
+                className="mt-6 px-6 h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-50">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
+                Tocca il sensore — primo dito
+              </button>
+            )}
+
+            {step === "sca" && requirePin && (
+              <div className="mt-6">
+                <p className="text-xs uppercase tracking-widest text-gold inline-flex items-center gap-1">
+                  <KeyRound className="h-3 w-3" /> SCA · conferma PIN
+                </p>
                 <input type="password" inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)}
                   placeholder="••••" maxLength={8}
-                  className="mt-6 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
+                  className="mt-4 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
                 <button onClick={secondFactor} disabled={loading || pin.length < 4}
-                  className="mt-6 w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium inline-flex items-center justify-center gap-2">
+                  className="mt-4 w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium inline-flex items-center justify-center gap-2 disabled:opacity-50">
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Conferma pagamento
                 </button>
-              </>
-            ) : (
-              <>
-                <button onClick={secondFactor} disabled={loading}
-                  className="mt-8 mx-auto h-32 w-32 rounded-full bg-gradient-gold/10 border-2 border-gold flex items-center justify-center hover:scale-105 transition active:scale-95">
-                  {loading ? <Loader2 className="h-10 w-10 text-gold animate-spin" /> : <Fingerprint className="h-14 w-14 text-gold" />}
-                </button>
-                <p className="mt-6 text-xs text-muted-foreground">Tocca con il secondo dito per confermare.</p>
-              </>
+              </div>
             )}
+
+            {step === "sca" && !requirePin && (
+              <button onClick={secondFactor} disabled={loading}
+                className="mt-6 px-6 h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-50">
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
+                Tocca il sensore — secondo dito
+              </button>
+            )}
+
+            <p className="mt-6 text-[10px] uppercase tracking-widest text-muted-foreground inline-flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3" /> Template biometrico nell'enclave hardware · attestation diretta
+            </p>
           </div>
         )}
 
