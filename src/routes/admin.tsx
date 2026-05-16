@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft } from "lucide-react";
+import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-role";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin · FingerPay" }] }),
 });
 
-type Tab = "settings" | "users" | "devices" | "audit";
+type Tab = "settings" | "users" | "devices" | "audit" | "sca_audit";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -44,7 +44,8 @@ function AdminPage() {
     { id: "settings", label: "Soglie SCA", icon: SettingsIcon },
     { id: "users", label: "Utenti", icon: Users },
     { id: "devices", label: "Dispositivi", icon: Smartphone },
-    { id: "audit", label: "Audit", icon: Receipt },
+    { id: "audit", label: "Transazioni", icon: Receipt },
+    { id: "sca_audit", label: "Audit SCA", icon: ScanLine },
   ];
 
   return (
@@ -73,6 +74,7 @@ function AdminPage() {
         {tab === "users" && <UsersTab />}
         {tab === "devices" && <DevicesTab />}
         {tab === "audit" && <AuditTab />}
+        {tab === "sca_audit" && <ScaAuditTab />}
       </div>
     </div>
   );
