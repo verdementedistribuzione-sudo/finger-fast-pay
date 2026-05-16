@@ -89,7 +89,7 @@ function AppLayout() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur z-40">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-6 text-[10px]">
           {tabs.map((t) => {
             const active = location.pathname.startsWith(t.to);
             return (
