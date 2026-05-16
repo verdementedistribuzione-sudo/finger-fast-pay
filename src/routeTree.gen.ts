@@ -14,11 +14,14 @@ import { Route as SecurityRouteImport } from './routes/security'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as MerchantsRouteImport } from './routes/merchants'
+import { Route as MerchantRouteImport } from './routes/merchant'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InvestorsRouteImport } from './routes/investors'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppWalletRouteImport } from './routes/_app.wallet'
+import { Route as AppRequestsRouteImport } from './routes/_app.requests'
 import { Route as AppPayRouteImport } from './routes/_app.pay'
 import { Route as AppCardsRouteImport } from './routes/_app.cards'
 
@@ -47,6 +50,11 @@ const MerchantsRoute = MerchantsRouteImport.update({
   path: '/merchants',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MerchantRoute = MerchantRouteImport.update({
+  id: '/merchant',
+  path: '/merchant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -55,6 +63,11 @@ const LoginRoute = LoginRouteImport.update({
 const InvestorsRoute = InvestorsRouteImport.update({
   id: '/investors',
   path: '/investors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -71,6 +84,11 @@ const AppWalletRoute = AppWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRequestsRoute = AppRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPayRoute = AppPayRouteImport.update({
   id: '/pay',
   path: '/pay',
@@ -84,8 +102,10 @@ const AppCardsRoute = AppCardsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
+  '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
@@ -93,12 +113,15 @@ export interface FileRoutesByFullPath {
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
   '/pay': typeof AppPayRoute
+  '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
+  '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
@@ -106,14 +129,17 @@ export interface FileRoutesByTo {
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
   '/pay': typeof AppPayRoute
+  '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/admin': typeof AdminRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
+  '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
@@ -121,14 +147,17 @@ export interface FileRoutesById {
   '/technology': typeof TechnologyRoute
   '/_app/cards': typeof AppCardsRoute
   '/_app/pay': typeof AppPayRoute
+  '/_app/requests': typeof AppRequestsRoute
   '/_app/wallet': typeof AppWalletRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/investors'
     | '/login'
+    | '/merchant'
     | '/merchants'
     | '/register'
     | '/roadmap'
@@ -136,12 +165,15 @@ export interface FileRouteTypes {
     | '/technology'
     | '/cards'
     | '/pay'
+    | '/requests'
     | '/wallet'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/investors'
     | '/login'
+    | '/merchant'
     | '/merchants'
     | '/register'
     | '/roadmap'
@@ -149,13 +181,16 @@ export interface FileRouteTypes {
     | '/technology'
     | '/cards'
     | '/pay'
+    | '/requests'
     | '/wallet'
   id:
     | '__root__'
     | '/'
     | '/_app'
+    | '/admin'
     | '/investors'
     | '/login'
+    | '/merchant'
     | '/merchants'
     | '/register'
     | '/roadmap'
@@ -163,14 +198,17 @@ export interface FileRouteTypes {
     | '/technology'
     | '/_app/cards'
     | '/_app/pay'
+    | '/_app/requests'
     | '/_app/wallet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  AdminRoute: typeof AdminRoute
   InvestorsRoute: typeof InvestorsRoute
   LoginRoute: typeof LoginRoute
+  MerchantRoute: typeof MerchantRoute
   MerchantsRoute: typeof MerchantsRoute
   RegisterRoute: typeof RegisterRoute
   RoadmapRoute: typeof RoadmapRoute
@@ -215,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MerchantsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/merchant': {
+      id: '/merchant'
+      path: '/merchant'
+      fullPath: '/merchant'
+      preLoaderRoute: typeof MerchantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -227,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/investors'
       fullPath: '/investors'
       preLoaderRoute: typeof InvestorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
@@ -250,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWalletRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/requests': {
+      id: '/_app/requests'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof AppRequestsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/pay': {
       id: '/_app/pay'
       path: '/pay'
@@ -270,12 +329,14 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppCardsRoute: typeof AppCardsRoute
   AppPayRoute: typeof AppPayRoute
+  AppRequestsRoute: typeof AppRequestsRoute
   AppWalletRoute: typeof AppWalletRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppCardsRoute: AppCardsRoute,
   AppPayRoute: AppPayRoute,
+  AppRequestsRoute: AppRequestsRoute,
   AppWalletRoute: AppWalletRoute,
 }
 
@@ -284,8 +345,10 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  AdminRoute: AdminRoute,
   InvestorsRoute: InvestorsRoute,
   LoginRoute: LoginRoute,
+  MerchantRoute: MerchantRoute,
   MerchantsRoute: MerchantsRoute,
   RegisterRoute: RegisterRoute,
   RoadmapRoute: RoadmapRoute,
