@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Wallet, CreditCard, Fingerprint, LogOut, Home, Bell, Shield } from "lucide-react";
+import { Wallet, CreditCard, Fingerprint, LogOut, Home, Bell, Shield, ScanLine } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,6 +40,7 @@ function AppLayout() {
     { to: "/wallet", icon: Wallet, label: "Wallet" },
     { to: "/cards", icon: CreditCard, label: "Carte" },
     { to: "/pay", icon: Fingerprint, label: "Paga" },
+    { to: "/enroll", icon: ScanLine, label: "Enroll" },
     { to: "/requests", icon: Bell, label: "Richieste", badge: pendingCount },
   ];
 
