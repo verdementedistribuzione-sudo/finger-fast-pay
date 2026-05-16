@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Fingerprint, Loader2, Check, AlertCircle, KeyRound } from "lucide-react";
+import { Fingerprint, Loader2, Check, AlertCircle, KeyRound, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { hasCredential, isBiometricSupported, verifyBiometric } from "@/lib/webauthn";
 import { verifyPin } from "@/lib/pin";
+import { FingerprintScan } from "@/components/FingerprintScan";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/pay")({
