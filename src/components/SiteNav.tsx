@@ -19,6 +19,7 @@ export function SiteNav() {
           <Link to="/investors" className="hover:text-gold transition">Investitori</Link>
         </div>
         <div className="flex items-center gap-3">
+          <Link to="/merchant" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground">Portale Merchant</Link>
           <Link to="/login" className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground">Accedi</Link>
           <Link
             to="/wallet"
