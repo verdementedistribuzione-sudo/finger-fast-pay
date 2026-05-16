@@ -64,7 +64,9 @@ export async function registerBiometric(userId: string, userName: string) {
         residentKey: "preferred",
       },
       timeout: 60000,
-      attestation: "none",
+      // direct attestation: il device fornisce una prova firmata
+      // dall'enclave hardware (Secure Enclave / StrongBox / TPM)
+      attestation: "direct",
     },
   })) as PublicKeyCredential | null;
 
