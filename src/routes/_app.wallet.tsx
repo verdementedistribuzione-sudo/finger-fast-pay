@@ -28,6 +28,15 @@ type Tx = {
   created_at: string;
 };
 
+type AuditRow = {
+  id: string;
+  step: string;
+  method: string;
+  outcome: string;
+  reason: string | null;
+  created_at: string;
+};
+
 const DOC_TYPES = [
   { v: "id", label: "Documento d'identità" },
   { v: "passport", label: "Passaporto" },
@@ -41,16 +50,19 @@ function WalletPage() {
   const { user } = useAuth();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [txs, setTxs] = useState<Tx[]>([]);
+  const [audit, setAudit] = useState<AuditRow[]>([]);
   const [adding, setAdding] = useState(false);
 
   async function load() {
     if (!user) return;
-    const [{ data: d }, { data: t }] = await Promise.all([
+    const [{ data: d }, { data: t }, { data: a }] = await Promise.all([
       supabase.from("documents").select("*").order("created_at", { ascending: false }),
       supabase.from("transactions").select("*").order("created_at", { ascending: false }).limit(10),
+      supabase.from("biometric_audit").select("*").order("created_at", { ascending: false }).limit(20),
     ]);
     setDocs(d || []);
     setTxs(t || []);
+    setAudit((a || []) as AuditRow[]);
   }
 
   useEffect(() => {
@@ -148,9 +160,50 @@ function WalletPage() {
         </div>
       </section>
 
+      <section className="mt-12">
+        <h2 className="text-sm uppercase tracking-widest text-muted-foreground">Audit SCA · ultime verifiche</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Solo esito e timestamp. Nessun dato biometrico è memorizzato.</p>
+        <div className="mt-4 rounded-2xl bg-card border border-border overflow-hidden">
+          {audit.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground text-sm">Nessuna verifica registrata.</div>
+          ) : (
+            <table className="w-full text-sm">
+              <tbody className="divide-y divide-border">
+                {audit.map((a) => (
+                  <tr key={a.id}>
+                    <td className="px-5 py-3 text-xs text-muted-foreground">{new Date(a.created_at).toLocaleString()}</td>
+                    <td className="px-5 py-3 text-xs">{stepLabel(a.step)}</td>
+                    <td className="px-5 py-3 text-xs uppercase tracking-widest text-muted-foreground">{a.method}</td>
+                    <td className="px-5 py-3">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                        a.outcome === "success"
+                          ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30"
+                          : "bg-red-500/10 text-red-600 border border-red-500/30"
+                      }`}>{a.outcome}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </section>
+
       {adding && <AddDocModal onClose={() => setAdding(false)} onAdded={() => { setAdding(false); load(); }} userId={user!.id} />}
     </div>
   );
+}
+
+function stepLabel(step: string) {
+  switch (step) {
+    case "finger_1": return "Dito 1 · identità";
+    case "finger_2": return "Dito 2 · autorizzazione";
+    case "pin": return "PIN · SCA";
+    case "app_fallback": return "App · conferma";
+    case "enrollment_1": return "Enrollment dito 1";
+    case "enrollment_2": return "Enrollment dito 2";
+    default: return step;
+  }
 }
 
 function AddDocModal({ onClose, onAdded, userId }: { onClose: () => void; onAdded: () => void; userId: string }) {

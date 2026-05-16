@@ -35,6 +35,39 @@ export type Database = {
         }
         Relationships: []
       }
+      biometric_audit: {
+        Row: {
+          created_at: string
+          id: string
+          method: string
+          outcome: string
+          reason: string | null
+          step: string
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          method: string
+          outcome: string
+          reason?: string | null
+          step: string
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          method?: string
+          outcome?: string
+          reason?: string | null
+          step?: string
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string

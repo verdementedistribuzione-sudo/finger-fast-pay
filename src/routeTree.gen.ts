@@ -23,6 +23,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppWalletRouteImport } from './routes/_app.wallet'
 import { Route as AppRequestsRouteImport } from './routes/_app.requests'
 import { Route as AppPayRouteImport } from './routes/_app.pay'
+import { Route as AppEnrollRouteImport } from './routes/_app.enroll'
 import { Route as AppCardsRouteImport } from './routes/_app.cards'
 
 const TechnologyRoute = TechnologyRouteImport.update({
@@ -94,6 +95,11 @@ const AppPayRoute = AppPayRouteImport.update({
   path: '/pay',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEnrollRoute = AppEnrollRouteImport.update({
+  id: '/enroll',
+  path: '/enroll',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCardsRoute = AppCardsRouteImport.update({
   id: '/cards',
   path: '/cards',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
+  '/enroll': typeof AppEnrollRoute
   '/pay': typeof AppPayRoute
   '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
+  '/enroll': typeof AppEnrollRoute
   '/pay': typeof AppPayRoute
   '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
   '/_app/cards': typeof AppCardsRoute
+  '/_app/enroll': typeof AppEnrollRoute
   '/_app/pay': typeof AppPayRoute
   '/_app/requests': typeof AppRequestsRoute
   '/_app/wallet': typeof AppWalletRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/technology'
     | '/cards'
+    | '/enroll'
     | '/pay'
     | '/requests'
     | '/wallet'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/technology'
     | '/cards'
+    | '/enroll'
     | '/pay'
     | '/requests'
     | '/wallet'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/technology'
     | '/_app/cards'
+    | '/_app/enroll'
     | '/_app/pay'
     | '/_app/requests'
     | '/_app/wallet'
@@ -316,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPayRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/enroll': {
+      id: '/_app/enroll'
+      path: '/enroll'
+      fullPath: '/enroll'
+      preLoaderRoute: typeof AppEnrollRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/cards': {
       id: '/_app/cards'
       path: '/cards'
@@ -328,6 +347,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppCardsRoute: typeof AppCardsRoute
+  AppEnrollRoute: typeof AppEnrollRoute
   AppPayRoute: typeof AppPayRoute
   AppRequestsRoute: typeof AppRequestsRoute
   AppWalletRoute: typeof AppWalletRoute
@@ -335,6 +355,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppCardsRoute: AppCardsRoute,
+  AppEnrollRoute: AppEnrollRoute,
   AppPayRoute: AppPayRoute,
   AppRequestsRoute: AppRequestsRoute,
   AppWalletRoute: AppWalletRoute,

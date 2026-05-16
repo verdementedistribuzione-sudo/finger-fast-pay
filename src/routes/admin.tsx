@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft } from "lucide-react";
+import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-role";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin · FingerPay" }] }),
 });
 
-type Tab = "settings" | "users" | "devices" | "audit";
+type Tab = "settings" | "users" | "devices" | "audit" | "sca_audit";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -44,7 +44,8 @@ function AdminPage() {
     { id: "settings", label: "Soglie SCA", icon: SettingsIcon },
     { id: "users", label: "Utenti", icon: Users },
     { id: "devices", label: "Dispositivi", icon: Smartphone },
-    { id: "audit", label: "Audit", icon: Receipt },
+    { id: "audit", label: "Transazioni", icon: Receipt },
+    { id: "sca_audit", label: "Audit SCA", icon: ScanLine },
   ];
 
   return (
@@ -73,6 +74,7 @@ function AdminPage() {
         {tab === "users" && <UsersTab />}
         {tab === "devices" && <DevicesTab />}
         {tab === "audit" && <AuditTab />}
+        {tab === "sca_audit" && <ScaAuditTab />}
       </div>
     </div>
   );
@@ -227,6 +229,88 @@ function AuditTab() {
               <td className="p-4 text-right font-display">€ {Number(t.amount).toFixed(2)}</td>
               <td className="p-4"><span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/30">{t.status}</span></td>
               <td className="p-4 font-mono text-xs text-muted-foreground">{t.token?.slice(0, 14)}…</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ScaAuditTab() {
+  type Row = {
+    id: string;
+    user_id: string;
+    transaction_id: string | null;
+    step: string;
+    method: string;
+    outcome: string;
+    reason: string | null;
+    created_at: string;
+  };
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("biometric_audit")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(300)
+      .then(({ data }) => {
+        setRows((data || []) as Row[]);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-muted-foreground">Caricamento…</div>;
+
+  return (
+    <div className="rounded-3xl border border-border bg-card overflow-hidden">
+      <div className="p-4 border-b border-border text-xs text-muted-foreground">
+        Solo esito e timestamp delle scansioni. <strong>Nessun dato biometrico</strong> è registrato.
+      </div>
+      <table className="w-full text-sm">
+        <thead className="bg-secondary/50 text-xs uppercase tracking-widest text-muted-foreground">
+          <tr>
+            <th className="text-left p-4">Quando</th>
+            <th className="text-left p-4">Utente</th>
+            <th className="text-left p-4">Step</th>
+            <th className="text-left p-4">Metodo</th>
+            <th className="text-left p-4">Esito</th>
+            <th className="text-left p-4">Transazione</th>
+            <th className="text-left p-4">Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                Nessuna verifica registrata.
+              </td>
+            </tr>
+          )}
+          {rows.map((r) => (
+            <tr key={r.id} className="border-t border-border">
+              <td className="p-4 text-muted-foreground">{new Date(r.created_at).toLocaleString("it-IT")}</td>
+              <td className="p-4 font-mono text-xs">{r.user_id.slice(0, 8)}…</td>
+              <td className="p-4">{r.step}</td>
+              <td className="p-4 uppercase tracking-widest text-xs text-muted-foreground">{r.method}</td>
+              <td className="p-4">
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full ${
+                    r.outcome === "success"
+                      ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30"
+                      : "bg-red-500/10 text-red-600 border border-red-500/30"
+                  }`}
+                >
+                  {r.outcome}
+                </span>
+              </td>
+              <td className="p-4 font-mono text-xs text-muted-foreground">
+                {r.transaction_id ? r.transaction_id.slice(0, 8) + "…" : "—"}
+              </td>
+              <td className="p-4 text-xs text-muted-foreground">{r.reason || "—"}</td>
             </tr>
           ))}
         </tbody>

@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Fingerprint, Loader2, Check, AlertCircle, KeyRound, ShieldCheck } from "lucide-react";
+import { Fingerprint, Loader2, Check, AlertCircle, KeyRound, ShieldCheck, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { hasCredential, isBiometricSupported, verifyBiometric } from "@/lib/webauthn";
 import { verifyPin } from "@/lib/pin";
 import { FingerprintScan } from "@/components/FingerprintScan";
+import { logAudit } from "@/lib/audit";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/pay")({
@@ -29,8 +30,12 @@ function PayPage() {
   const [threshold, setThreshold] = useState(50);
   const [requirePin, setRequirePin] = useState(true);
   const [pin, setPin] = useState("");
+  const [firstPin, setFirstPin] = useState("");
   const [scan1, setScan1] = useState<"idle" | "scanning" | "done">("idle");
   const [scan2, setScan2] = useState<"idle" | "scanning" | "done">("idle");
+
+  // Flusso alternativo: niente biometria → PIN come fattore inherence surrogato + app/PIN come SCA
+  const fallbackMode = !bioSupported || (user ? !hasCredential(user.id) : true);
 
   useEffect(() => {
     isBiometricSupported().then(setBioSupported);
@@ -55,52 +60,102 @@ function PayPage() {
 
   async function firstFinger() {
     if (!user) return;
-    if (!hasCredential(user.id)) { toast.error("Registra prima la biometria"); return; }
     setLoading(true); setScan1("scanning");
     try {
       await verifyBiometric(user.id);
       setScan1("done");
+      await logAudit({ userId: user.id, step: "finger_1", method: "biometric", outcome: "success" });
       toast.success("Primo dito: identità sbloccata");
-      if (aboveThreshold) setStep("sca"); else await finalizeAuthorize();
+      if (aboveThreshold) setStep("sca"); else await finalizeAuthorize("biometric");
     } catch (err) {
       setScan1("idle");
+      await logAudit({
+        userId: user.id, step: "finger_1", method: "biometric",
+        outcome: "failure", reason: (err as Error).message.slice(0, 80),
+      });
       toast.error("Verifica fallita: " + (err as Error).message);
+    } finally { setLoading(false); }
+  }
+
+  async function firstPinSubmit() {
+    if (!user) return;
+    setLoading(true); setScan1("scanning");
+    try {
+      const { data: prof } = await supabase.from("profiles").select("pin_hash").eq("id", user.id).maybeSingle();
+      if (!prof?.pin_hash) throw new Error("PIN non impostato. Vai su Enroll.");
+      const ok = await verifyPin(user.id, firstPin, prof.pin_hash);
+      if (!ok) throw new Error("PIN errato");
+      setScan1("done"); setFirstPin("");
+      await logAudit({ userId: user.id, step: "finger_1", method: "pin", outcome: "success", reason: "biometric_unavailable" });
+      toast.success("Identità verificata (fallback PIN)");
+      if (aboveThreshold) setStep("sca"); else await finalizeAuthorize("pin");
+    } catch (err) {
+      setScan1("idle");
+      await logAudit({
+        userId: user.id, step: "finger_1", method: "pin",
+        outcome: "failure", reason: (err as Error).message.slice(0, 80),
+      });
+      toast.error((err as Error).message);
     } finally { setLoading(false); }
   }
 
   async function secondFactor() {
     if (!user) return;
     setLoading(true); setScan2("scanning");
+    const useBio = !requirePin && !fallbackMode;
     try {
-      if (requirePin) {
+      if (useBio) {
+        await verifyBiometric(user.id);
+        await logAudit({ userId: user.id, step: "finger_2", method: "biometric", outcome: "success" });
+      } else {
         const { data: prof } = await supabase.from("profiles").select("pin_hash").eq("id", user.id).maybeSingle();
         if (!prof?.pin_hash) throw new Error("PIN non impostato");
         const ok = await verifyPin(user.id, pin, prof.pin_hash);
         if (!ok) throw new Error("PIN errato");
-      } else {
-        await verifyBiometric(user.id);
+        await logAudit({
+          userId: user.id, step: "pin", method: "pin",
+          outcome: "success", reason: fallbackMode ? "biometric_unavailable" : "above_threshold",
+        });
       }
       setScan2("done");
-      await finalizeAuthorize();
+      await finalizeAuthorize(useBio ? "biometric" : "pin");
     } catch (err) {
       setScan2("idle");
+      await logAudit({
+        userId: user.id, step: useBio ? "finger_2" : "pin", method: useBio ? "biometric" : "pin",
+        outcome: "failure", reason: (err as Error).message.slice(0, 80),
+      });
       toast.error((err as Error).message);
     } finally { setLoading(false); }
   }
 
-  async function finalizeAuthorize() {
+  async function finalizeAuthorize(secondMethod: "biometric" | "pin") {
     if (!user) return;
     const tok = "fp_" + crypto.randomUUID().replace(/-/g, "").slice(0, 24);
-    const { error } = await supabase.from("transactions").insert({
+    const { data: txData, error } = await supabase.from("transactions").insert({
       user_id: user.id, card_id: cardId, amount: Number(amount), currency: "EUR",
       status: "authorized", token: tok, merchant,
-    });
+    }).select("id").single();
     if (error) throw error;
+
+    // Collega le ultime righe di audit (senza tx_id) alla transazione appena creata.
+    if (txData?.id) {
+      await supabase
+        .from("biometric_audit")
+        .update({ transaction_id: txData.id })
+        .eq("user_id", user.id)
+        .is("transaction_id", null)
+        .gte("created_at", new Date(Date.now() - 5 * 60 * 1000).toISOString());
+    }
+
     setToken(tok); setStep("done");
-    toast.success("Pagamento autorizzato");
+    toast.success("Pagamento autorizzato · " + (secondMethod === "biometric" ? "biometria" : "PIN"));
   }
 
-  function reset() { setAmount(""); setPin(""); setStep("form"); setToken(null); setScan1("idle"); setScan2("idle"); }
+  function reset() {
+    setAmount(""); setPin(""); setFirstPin(""); setStep("form");
+    setToken(null); setScan1("idle"); setScan2("idle");
+  }
 
   if (cards.length === 0) {
     return (
@@ -123,9 +178,13 @@ function PayPage() {
         Sotto € {threshold.toFixed(2)}: un dito. Sopra: SCA con {requirePin ? "PIN" : "secondo dito"}.
       </p>
 
-      {!bioSupported && (
-        <div className="mt-6 p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-sm text-yellow-700">
-          Il tuo dispositivo non espone una biometria di sistema. Su iOS/Android funziona nativamente.
+      {fallbackMode && (
+        <div className="mt-6 p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-sm text-yellow-700 inline-flex items-start gap-2">
+          <AlertTriangle className="h-4 w-4 mt-0.5" />
+          <div>
+            Biometria non disponibile o non registrata: useremo <strong>PIN</strong> per identità e SCA.
+            <Link to="/enroll" className="ml-1 underline">Configura ora</Link>.
+          </div>
         </div>
       )}
 
@@ -169,10 +228,9 @@ function PayPage() {
               {aboveThreshold ? `Passo ${step === "first" ? 1 : 2} di 2` : "Autorizza pagamento"}
             </div>
 
-            {/* Grafico delle due impronte acquisite dall'hardware del device */}
             <div className="mt-6 flex items-center justify-center gap-6">
               <FingerprintScan state={scan1} label="Dito 1 · identità" size={130} />
-              {aboveThreshold && !requirePin && (
+              {aboveThreshold && !requirePin && !fallbackMode && (
                 <FingerprintScan state={scan2} label="Dito 2 · autorizz." size={130} />
               )}
             </div>
@@ -180,7 +238,7 @@ function PayPage() {
             <div className="mt-6 font-display text-3xl">€ {Number(amount).toFixed(2)}</div>
             <div className="text-sm text-muted-foreground">{merchant}</div>
 
-            {step === "first" && (
+            {step === "first" && !fallbackMode && (
               <button onClick={firstFinger} disabled={loading}
                 className="mt-6 px-6 h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-50">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
@@ -188,7 +246,22 @@ function PayPage() {
               </button>
             )}
 
-            {step === "sca" && requirePin && (
+            {step === "first" && fallbackMode && (
+              <div className="mt-6">
+                <p className="text-xs uppercase tracking-widest text-gold inline-flex items-center gap-1 justify-center">
+                  <KeyRound className="h-3 w-3" /> PIN · fallback identità
+                </p>
+                <input type="password" inputMode="numeric" value={firstPin} onChange={(e) => setFirstPin(e.target.value)}
+                  placeholder="••••" maxLength={8}
+                  className="mt-4 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
+                <button onClick={firstPinSubmit} disabled={loading || firstPin.length < 4}
+                  className="mt-4 w-full h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium inline-flex items-center justify-center gap-2 disabled:opacity-50">
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}Verifica identità
+                </button>
+              </div>
+            )}
+
+            {step === "sca" && (requirePin || fallbackMode) && (
               <div className="mt-6">
                 <p className="text-xs uppercase tracking-widest text-gold inline-flex items-center gap-1">
                   <KeyRound className="h-3 w-3" /> SCA · conferma PIN
@@ -203,7 +276,7 @@ function PayPage() {
               </div>
             )}
 
-            {step === "sca" && !requirePin && (
+            {step === "sca" && !requirePin && !fallbackMode && (
               <button onClick={secondFactor} disabled={loading}
                 className="mt-6 px-6 h-12 rounded-full bg-gradient-gold text-primary-foreground font-medium shadow-gold inline-flex items-center justify-center gap-2 disabled:opacity-50">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Fingerprint className="h-4 w-4" />}
