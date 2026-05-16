@@ -56,12 +56,14 @@ function PayPage() {
   async function firstFinger() {
     if (!user) return;
     if (!hasCredential(user.id)) { toast.error("Registra prima la biometria"); return; }
-    setLoading(true);
+    setLoading(true); setScan1("scanning");
     try {
       await verifyBiometric(user.id);
+      setScan1("done");
       toast.success("Primo dito: identità sbloccata");
       if (aboveThreshold) setStep("sca"); else await finalizeAuthorize();
     } catch (err) {
+      setScan1("idle");
       toast.error("Verifica fallita: " + (err as Error).message);
     } finally { setLoading(false); }
   }
