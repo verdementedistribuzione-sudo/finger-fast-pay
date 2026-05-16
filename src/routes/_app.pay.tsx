@@ -29,6 +29,8 @@ function PayPage() {
   const [threshold, setThreshold] = useState(50);
   const [requirePin, setRequirePin] = useState(true);
   const [pin, setPin] = useState("");
+  const [scan1, setScan1] = useState<"idle" | "scanning" | "done">("idle");
+  const [scan2, setScan2] = useState<"idle" | "scanning" | "done">("idle");
 
   useEffect(() => {
     isBiometricSupported().then(setBioSupported);
