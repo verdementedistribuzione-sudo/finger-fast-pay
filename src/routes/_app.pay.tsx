@@ -70,7 +70,7 @@ function PayPage() {
 
   async function secondFactor() {
     if (!user) return;
-    setLoading(true);
+    setLoading(true); setScan2("scanning");
     try {
       if (requirePin) {
         const { data: prof } = await supabase.from("profiles").select("pin_hash").eq("id", user.id).maybeSingle();
@@ -80,8 +80,10 @@ function PayPage() {
       } else {
         await verifyBiometric(user.id);
       }
+      setScan2("done");
       await finalizeAuthorize();
     } catch (err) {
+      setScan2("idle");
       toast.error((err as Error).message);
     } finally { setLoading(false); }
   }
@@ -98,7 +100,7 @@ function PayPage() {
     toast.success("Pagamento autorizzato");
   }
 
-  function reset() { setAmount(""); setPin(""); setStep("form"); setToken(null); }
+  function reset() { setAmount(""); setPin(""); setStep("form"); setToken(null); setScan1("idle"); setScan2("idle"); }
 
   if (cards.length === 0) {
     return (
