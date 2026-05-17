@@ -21,7 +21,6 @@ function Home() {
       {/* HERO */}
       <section className="relative pt-32 pb-24 overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-background" />
-        </div>
 
         <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
