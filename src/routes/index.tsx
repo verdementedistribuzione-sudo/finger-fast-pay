@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import heroImg from "@/assets/hero-fingerprint.jpg";
-import posImg from "@/assets/pos-device.jpg";
-import securityBg from "@/assets/security-bg.jpg";
 import { Fingerprint, Shield, Zap, Wallet, Ticket, KeyRound, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
