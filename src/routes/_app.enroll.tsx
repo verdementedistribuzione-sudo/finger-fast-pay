@@ -12,12 +12,29 @@ import {
 import { hashPin, verifyPin } from "@/lib/pin";
 import { FingerprintScan } from "@/components/FingerprintScan";
 import { logAudit } from "@/lib/audit";
+import { SecurityGate } from "@/components/SecurityGate";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/enroll")({
-  component: EnrollPage,
+  component: GatedEnroll,
   head: () => ({ meta: [{ title: "Enrollment biometrico · FingerPay" }] }),
 });
+
+function GatedEnroll() {
+  const [unlocked, setUnlocked] = useState(false);
+  if (!unlocked) {
+    return (
+      <SecurityGate
+        title="Scansione impronte"
+        description="Doppio lucchetto: password + PIN, poi permessi del telefono."
+        onUnlocked={() => setUnlocked(true)}
+      >
+        <div />
+      </SecurityGate>
+    );
+  }
+  return <EnrollPage />;
+}
 
 type ScanState = "idle" | "scanning" | "done" | "error";
 
