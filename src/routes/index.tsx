@@ -142,8 +142,26 @@ function Home() {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-12 radial-gold blur-3xl" />
-            <img src={posImg} alt="POS biometrico FingerPay" loading="lazy" width={1024} height={1024} className="relative rounded-3xl shadow-luxe" />
+            <div className="glass rounded-3xl p-10 border border-gold/20">
+              <div className="grid grid-cols-2 gap-6 text-center">
+                <div>
+                  <div className="font-display text-5xl text-gold">1</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">dito</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">∞</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">contesti</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">0</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">carte</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">0</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">password</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
