@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import heroImg from "@/assets/hero-fingerprint.jpg";
-import posImg from "@/assets/pos-device.jpg";
-import securityBg from "@/assets/security-bg.jpg";
 import { Fingerprint, Shield, Zap, Wallet, Ticket, KeyRound, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -22,11 +19,8 @@ function Home() {
       <SiteNav />
 
       {/* HERO */}
-      <section className="relative pt-32 pb-24 overflow-hidden noise">
-        <div className="absolute inset-0 -z-10">
-          <img src={heroImg} alt="" className="w-full h-full object-cover opacity-40" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-        </div>
+      <section className="relative pt-32 pb-24 overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background via-background to-background" />
 
         <div className="mx-auto max-w-7xl px-6 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
@@ -148,18 +142,32 @@ function Home() {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-12 radial-gold blur-3xl" />
-            <img src={posImg} alt="POS biometrico FingerPay" loading="lazy" width={1024} height={1024} className="relative rounded-3xl shadow-luxe" />
+            <div className="glass rounded-3xl p-10 border border-gold/20">
+              <div className="grid grid-cols-2 gap-6 text-center">
+                <div>
+                  <div className="font-display text-5xl text-gold">1</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">dito</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">∞</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">contesti</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">0</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">carte</div>
+                </div>
+                <div>
+                  <div className="font-display text-5xl text-gold">0</div>
+                  <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">password</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* SECURITY */}
-      <section className="relative py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <img src={securityBg} alt="" loading="lazy" width={1536} height={800} className="w-full h-full object-cover opacity-20" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
-        </div>
+      <section className="relative py-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-3xl mx-auto text-center">
             <div className="text-xs uppercase tracking-[0.3em] text-gold">Security Model</div>
