@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { verifyPin } from "@/lib/pin";
 import { toast } from "sonner";
+import { AccountToolbar } from "./AccountToolbar";
 
 type Step = "password" | "pin" | "permission" | "unlocked";
 
