@@ -15,6 +15,7 @@ import { logAudit } from "@/lib/audit";
 import { SecurityGate } from "@/components/SecurityGate";
 import { toast } from "sonner";
 import { AccountToolbar } from "@/components/AccountToolbar";
+import { EnrollStatusPanel } from "@/components/EnrollStatusPanel";
 
 export const Route = createFileRoute("/_app/enroll")({
   component: GatedEnroll,
