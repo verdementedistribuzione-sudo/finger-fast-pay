@@ -119,6 +119,8 @@ export function SecurityGate({
           </div>
         </div>
 
+        <AccountToolbar className="mt-4 justify-end" />
+
         {/* progress */}
         <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-widest">
           <Dot active={step === "password"} done={step !== "password"} label="Password" />
