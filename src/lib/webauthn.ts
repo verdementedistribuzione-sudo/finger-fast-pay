@@ -49,10 +49,11 @@ export async function registerBiometric(userId: string, userName: string) {
   const challenge = crypto.getRandomValues(new Uint8Array(32));
   const userIdBytes = new TextEncoder().encode(userId);
 
+  const rpId = typeof window !== "undefined" ? window.location.hostname : undefined;
   const credential = (await navigator.credentials.create({
     publicKey: {
       challenge,
-      rp: { name: "FingerPay" },
+      rp: rpId ? { name: "FingerPay", id: rpId } : { name: "FingerPay" },
       user: { id: userIdBytes, name: userName, displayName: userName },
       pubKeyCredParams: [
         { type: "public-key", alg: -7 },
@@ -64,9 +65,9 @@ export async function registerBiometric(userId: string, userName: string) {
         residentKey: "preferred",
       },
       timeout: 60000,
-      // direct attestation: il device fornisce una prova firmata
-      // dall'enclave hardware (Secure Enclave / StrongBox / TPM)
-      attestation: "direct",
+      // "none" funziona su tutti i telefoni (iOS/Android) senza richiedere
+      // catene di attestazione che alcuni browser mobile bloccano.
+      attestation: "none",
     },
   })) as PublicKeyCredential | null;
 
@@ -84,9 +85,11 @@ export async function verifyBiometric(userId: string): Promise<boolean> {
   if (!cred) throw new Error("Nessuna credenziale biometrica registrata");
 
   const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const rpId = typeof window !== "undefined" ? window.location.hostname : undefined;
   const assertion = await navigator.credentials.get({
     publicKey: {
       challenge,
+      ...(rpId ? { rpId } : {}),
       allowCredentials: [{ id: b64ToBuf(cred.credentialId), type: "public-key" }],
       userVerification: "required",
       timeout: 60000,

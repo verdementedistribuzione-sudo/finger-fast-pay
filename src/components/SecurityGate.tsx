@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { verifyPin } from "@/lib/pin";
 import { toast } from "sonner";
+import { AccountToolbar } from "./AccountToolbar";
 
 type Step = "password" | "pin" | "permission" | "unlocked";
 
@@ -117,6 +118,8 @@ export function SecurityGate({
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
         </div>
+
+        <AccountToolbar className="mt-4 justify-end" />
 
         {/* progress */}
         <div className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-widest">
