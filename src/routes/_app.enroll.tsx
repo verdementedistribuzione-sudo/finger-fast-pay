@@ -191,11 +191,24 @@ function EnrollPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="text-xs uppercase tracking-[0.3em] text-gold">Enrollment biometrico</div>
-      <h1 className="mt-2 text-4xl font-display">Registra e verifica le impronte</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Il template non lascia mai l'enclave hardware. Salviamo solo esito e timestamp delle scansioni.
-      </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="text-xs uppercase tracking-[0.3em] text-gold">Enrollment biometrico</div>
+          <h1 className="mt-2 text-4xl font-display">Registra e verifica le impronte</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Il template non lascia mai l'enclave hardware. Salviamo solo esito e timestamp delle scansioni.
+          </p>
+        </div>
+        <AccountToolbar />
+      </div>
+
+      {/* Suggerimento esplicito per uso da telefono */}
+      {supported === false && (
+        <div className="mt-4 p-3 rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-xs text-yellow-700 dark:text-yellow-400">
+          Per scansionare l'impronta apri questa pagina <strong>dal tuo iPhone o Android</strong>:
+          Safari / Chrome useranno Face ID, Touch ID o il sensore di impronte del telefono.
+        </div>
+      )}
 
       {/* Controllo compatibilità */}
       <div className="mt-8 p-5 rounded-2xl border border-border bg-card flex items-start gap-4">
