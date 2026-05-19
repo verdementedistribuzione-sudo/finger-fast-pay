@@ -14,6 +14,7 @@ import { FingerprintScan } from "@/components/FingerprintScan";
 import { logAudit } from "@/lib/audit";
 import { SecurityGate } from "@/components/SecurityGate";
 import { toast } from "sonner";
+import { AccountToolbar } from "@/components/AccountToolbar";
 
 export const Route = createFileRoute("/_app/enroll")({
   component: GatedEnroll,
