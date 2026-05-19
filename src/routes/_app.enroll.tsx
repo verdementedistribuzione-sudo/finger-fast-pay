@@ -207,6 +207,10 @@ function EnrollPage() {
         <AccountToolbar />
       </div>
 
+      <div className="mt-6">
+        <EnrollStatusPanel refreshKey={statusKey} />
+      </div>
+
       {/* Suggerimento esplicito per uso da telefono */}
       {supported === false && (
         <div className="mt-4 p-3 rounded-xl border border-yellow-500/30 bg-yellow-500/5 text-xs text-yellow-700 dark:text-yellow-400">
