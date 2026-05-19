@@ -94,6 +94,7 @@ function EnrollPage() {
         outcome: "success",
       });
       toast.success("Impronta 1 acquisita");
+      bumpStatus();
     } catch (err) {
       setScan1("error");
       await logAudit({
