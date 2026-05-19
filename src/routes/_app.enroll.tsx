@@ -15,6 +15,7 @@ import { logAudit } from "@/lib/audit";
 import { SecurityGate } from "@/components/SecurityGate";
 import { toast } from "sonner";
 import { AccountToolbar } from "@/components/AccountToolbar";
+import { EnrollStatusPanel } from "@/components/EnrollStatusPanel";
 
 export const Route = createFileRoute("/_app/enroll")({
   component: GatedEnroll,
@@ -52,6 +53,8 @@ function EnrollPage() {
   const [hasPin, setHasPin] = useState(false);
   const [mode, setMode] = useState<"bio" | "fallback">("bio");
   const [deviceLabel] = useState(detectDevice());
+  const [statusKey, setStatusKey] = useState(0);
+  const bumpStatus = () => setStatusKey((k) => k + 1);
 
   useEffect(() => {
     isBiometricSupported().then((ok) => {
@@ -91,6 +94,7 @@ function EnrollPage() {
         outcome: "success",
       });
       toast.success("Impronta 1 acquisita");
+      bumpStatus();
     } catch (err) {
       setScan1("error");
       await logAudit({
@@ -123,6 +127,7 @@ function EnrollPage() {
         outcome: "success",
       });
       toast.success("Impronta 2 confermata");
+      bumpStatus();
     } catch (err) {
       setScan2("error");
       await logAudit({
@@ -200,6 +205,10 @@ function EnrollPage() {
           </p>
         </div>
         <AccountToolbar />
+      </div>
+
+      <div className="mt-6">
+        <EnrollStatusPanel refreshKey={statusKey} />
       </div>
 
       {/* Suggerimento esplicito per uso da telefono */}

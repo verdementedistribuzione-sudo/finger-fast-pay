@@ -3,6 +3,8 @@
 // verification. The biometric template never leaves the device — only a
 // cryptographic assertion is produced.
 
+import { supabase } from "@/integrations/supabase/client";
+
 const STORAGE_KEY = "fp_webauthn_credentials";
 
 type StoredCred = { userId: string; credentialId: string };
@@ -19,8 +21,39 @@ function saveAll(creds: StoredCred[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(creds));
 }
 
+/** Sincrono — utile per UI rapide. Riflette solo cache locale del device. */
 export function hasCredential(userId: string) {
   return loadAll().some((c) => c.userId === userId);
+}
+
+export type EnrollStatus = {
+  supported: boolean;
+  registeredOnDevice: boolean;
+  registeredInDb: boolean;
+  devicesInDb: number;
+  lastUsedAt: string | null;
+};
+
+/** Verifica autoritativa: combina supporto WebAuthn + DB user_devices. */
+export async function getEnrollStatus(userId: string): Promise<EnrollStatus> {
+  const supported = await isBiometricSupported();
+  const registeredOnDevice = hasCredential(userId);
+  let registeredInDb = false;
+  let devicesInDb = 0;
+  let lastUsedAt: string | null = null;
+  try {
+    const { data } = await supabase
+      .from("user_devices")
+      .select("credential_id, last_used_at")
+      .eq("user_id", userId)
+      .order("last_used_at", { ascending: false, nullsFirst: false });
+    devicesInDb = data?.length ?? 0;
+    registeredInDb = (data ?? []).some((d) => !!d.credential_id);
+    lastUsedAt = data?.[0]?.last_used_at ?? null;
+  } catch {
+    /* offline / RLS: lascia falsi */
+  }
+  return { supported, registeredOnDevice, registeredInDb, devicesInDb, lastUsedAt };
 }
 
 export async function isBiometricSupported(): Promise<boolean> {
@@ -95,6 +128,17 @@ export async function verifyBiometric(userId: string): Promise<boolean> {
       timeout: 60000,
     },
   });
+  if (assertion) {
+    // Prova che il sensore biometrico è stato effettivamente toccato:
+    // marchiamo last_used_at nel DB. Se RLS blocca, ignoriamo.
+    try {
+      await supabase
+        .from("user_devices")
+        .update({ last_used_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .eq("credential_id", cred.credentialId);
+    } catch { /* non-fatal */ }
+  }
   return !!assertion;
 }
 
