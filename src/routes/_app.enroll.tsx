@@ -53,6 +53,8 @@ function EnrollPage() {
   const [hasPin, setHasPin] = useState(false);
   const [mode, setMode] = useState<"bio" | "fallback">("bio");
   const [deviceLabel] = useState(detectDevice());
+  const [statusKey, setStatusKey] = useState(0);
+  const bumpStatus = () => setStatusKey((k) => k + 1);
 
   useEffect(() => {
     isBiometricSupported().then((ok) => {
