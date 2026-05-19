@@ -127,6 +127,7 @@ function EnrollPage() {
         outcome: "success",
       });
       toast.success("Impronta 2 confermata");
+      bumpStatus();
     } catch (err) {
       setScan2("error");
       await logAudit({
