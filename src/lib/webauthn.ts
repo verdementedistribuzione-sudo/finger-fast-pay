@@ -128,6 +128,17 @@ export async function verifyBiometric(userId: string): Promise<boolean> {
       timeout: 60000,
     },
   });
+  if (assertion) {
+    // Prova che il sensore biometrico è stato effettivamente toccato:
+    // marchiamo last_used_at nel DB. Se RLS blocca, ignoriamo.
+    try {
+      await supabase
+        .from("user_devices")
+        .update({ last_used_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .eq("credential_id", cred.credentialId);
+    } catch { /* non-fatal */ }
+  }
   return !!assertion;
 }
 
