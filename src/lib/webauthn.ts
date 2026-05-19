@@ -85,9 +85,11 @@ export async function verifyBiometric(userId: string): Promise<boolean> {
   if (!cred) throw new Error("Nessuna credenziale biometrica registrata");
 
   const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const rpId = typeof window !== "undefined" ? window.location.hostname : undefined;
   const assertion = await navigator.credentials.get({
     publicKey: {
       challenge,
+      ...(rpId ? { rpId } : {}),
       allowCredentials: [{ id: b64ToBuf(cred.credentialId), type: "public-key" }],
       userVerification: "required",
       timeout: 60000,
