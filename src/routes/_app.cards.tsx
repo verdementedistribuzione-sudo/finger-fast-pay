@@ -188,12 +188,20 @@ function AddCardModal({ onClose, onAdded, userId }: { onClose: () => void; onAdd
         <button type="button" onClick={() => cameraRef.current?.click()}
           className="mt-5 w-full h-32 rounded-xl border border-dashed border-border hover:border-gold flex flex-col items-center justify-center gap-2 text-sm relative overflow-hidden">
           {photo ? (
-            <img src={photo} alt="card" className="absolute inset-0 w-full h-full object-cover" />
+            <>
+              <img src={photo} alt="card" className="absolute inset-0 w-full h-full object-cover" />
+              {scanning && (
+                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white gap-2">
+                  <ScanLine className="h-6 w-6 animate-pulse" />
+                  <span className="text-xs">Lettura OCR… {Math.round(scanProgress * 100)}%</span>
+                </div>
+              )}
+            </>
           ) : (
             <>
               <Camera className="h-6 w-6" />
               <span>Scatta foto della carta</span>
-              <span className="text-xs text-muted-foreground">La foto resta sul dispositivo</span>
+              <span className="text-xs text-muted-foreground">OCR automatico sul dispositivo</span>
             </>
           )}
         </button>
