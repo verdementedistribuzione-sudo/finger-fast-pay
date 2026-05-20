@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Plus, Trash2, Loader2, X, Camera, CreditCard } from "lucide-react";
+import { Plus, Trash2, Loader2, X, Camera, CreditCard, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { ocrCard } from "@/lib/card-ocr";
 
 export const Route = createFileRoute("/_app/cards")({
   component: CardsPage,
@@ -120,15 +121,34 @@ function AddCardModal({ onClose, onAdded, userId }: { onClose: () => void; onAdd
   const [exp, setExp] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const cameraRef = useRef<HTMLInputElement>(null);
 
   function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => setPhoto(reader.result as string);
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setPhoto(dataUrl);
+      setScanning(true);
+      setScanProgress(0);
+      try {
+        const result = await ocrCard(dataUrl, (p) => setScanProgress(p));
+        let filled = 0;
+        if (result.pan) { setPan(result.pan.replace(/(\d{4})/g, "$1 ").trim()); filled++; }
+        if (result.exp) { setExp(result.exp); filled++; }
+        if (result.holder) { setHolder(result.holder); filled++; }
+        if (filled > 0) toast.success(`OCR: ${filled} campo/i rilevati. Verifica e correggi.`);
+        else toast.warning("OCR non riuscito. Compila a mano guardando la carta.");
+      } catch (err) {
+        toast.error("Errore OCR: " + (err as Error).message);
+      } finally {
+        setScanning(false);
+      }
+    };
     reader.readAsDataURL(f);
-    toast.info("Foto acquisita. Compila i campi guardando la carta.");
   }
 
   async function save(e: React.FormEvent) {
