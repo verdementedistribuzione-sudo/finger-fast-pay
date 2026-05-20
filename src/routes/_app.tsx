@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Wallet, CreditCard, Fingerprint, LogOut, Home, Bell, Shield, ScanLine } from "lucide-react";
+import { Wallet, CreditCard, Fingerprint, LogOut, Home, Bell, Shield, ScanLine, Ticket } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +39,7 @@ function AppLayout() {
   const tabs = [
     { to: "/wallet", icon: Wallet, label: "Wallet" },
     { to: "/cards", icon: CreditCard, label: "Carte" },
+    { to: "/loyalty", icon: Ticket, label: "Tessere" },
     { to: "/pay", icon: Fingerprint, label: "Paga" },
     { to: "/enroll", icon: ScanLine, label: "Enroll" },
     { to: "/requests", icon: Bell, label: "Richieste", badge: pendingCount },
@@ -89,7 +90,7 @@ function AppLayout() {
       </main>
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 border-t border-border bg-card/95 backdrop-blur z-40">
-        <div className="grid grid-cols-6 text-[10px]">
+        <div className="grid grid-cols-7 text-[10px]">
           {tabs.map((t) => {
             const active = location.pathname.startsWith(t.to);
             return (
