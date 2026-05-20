@@ -101,6 +101,60 @@ export type Database = {
         }
         Relationships: []
       }
+      loyalty_cards: {
+        Row: {
+          barcode_type: string
+          barcode_value: string
+          brand: string
+          card_number: string
+          card_type: string
+          color: string | null
+          created_at: string
+          encrypted_extra: string | null
+          expires_at: string | null
+          id: string
+          iv: string | null
+          logo_url: string | null
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          barcode_type?: string
+          barcode_value: string
+          brand: string
+          card_number: string
+          card_type?: string
+          color?: string | null
+          created_at?: string
+          encrypted_extra?: string | null
+          expires_at?: string | null
+          id?: string
+          iv?: string | null
+          logo_url?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          barcode_type?: string
+          barcode_value?: string
+          brand?: string
+          card_number?: string
+          card_type?: string
+          color?: string | null
+          created_at?: string
+          encrypted_extra?: string | null
+          expires_at?: string | null
+          id?: string
+          iv?: string | null
+          logo_url?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_cards: {
         Row: {
           brand: string
