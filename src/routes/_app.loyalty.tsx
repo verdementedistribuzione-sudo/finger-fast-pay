@@ -239,8 +239,7 @@ function FullscreenCard({ card, onClose }: { card: Loyalty; onClose: () => void 
     let wakeLock: { release: () => Promise<void> } | null = null;
     (async () => {
       try {
-        // @ts-expect-error experimental
-        wakeLock = await navigator.wakeLock?.request("screen");
+        wakeLock = await (navigator as Navigator & { wakeLock?: { request: (t: string) => Promise<{ release: () => Promise<void> }> } }).wakeLock?.request("screen") ?? null;
       } catch {/* */}
     })();
     return () => { wakeLock?.release().catch(() => {}); };
