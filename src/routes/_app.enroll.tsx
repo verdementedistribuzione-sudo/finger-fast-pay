@@ -16,6 +16,7 @@ import { SecurityGate } from "@/components/SecurityGate";
 import { toast } from "sonner";
 import { AccountToolbar } from "@/components/AccountToolbar";
 import { EnrollStatusPanel } from "@/components/EnrollStatusPanel";
+import { OpenInBrowserBanner } from "@/components/OpenInBrowserBanner";
 
 export const Route = createFileRoute("/_app/enroll")({
   component: GatedEnroll,
@@ -207,7 +208,8 @@ function EnrollPage() {
         <AccountToolbar />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-4">
+        <OpenInBrowserBanner />
         <EnrollStatusPanel refreshKey={statusKey} />
       </div>
 
