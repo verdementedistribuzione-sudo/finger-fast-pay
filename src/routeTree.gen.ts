@@ -23,6 +23,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppWalletRouteImport } from './routes/_app.wallet'
 import { Route as AppRequestsRouteImport } from './routes/_app.requests'
 import { Route as AppPayRouteImport } from './routes/_app.pay'
+import { Route as AppLoyaltyRouteImport } from './routes/_app.loyalty'
 import { Route as AppEnrollRouteImport } from './routes/_app.enroll'
 import { Route as AppCardsRouteImport } from './routes/_app.cards'
 
@@ -95,6 +96,11 @@ const AppPayRoute = AppPayRouteImport.update({
   path: '/pay',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLoyaltyRoute = AppLoyaltyRouteImport.update({
+  id: '/loyalty',
+  path: '/loyalty',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEnrollRoute = AppEnrollRouteImport.update({
   id: '/enroll',
   path: '/enroll',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
   '/enroll': typeof AppEnrollRoute
+  '/loyalty': typeof AppLoyaltyRoute
   '/pay': typeof AppPayRoute
   '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/technology': typeof TechnologyRoute
   '/cards': typeof AppCardsRoute
   '/enroll': typeof AppEnrollRoute
+  '/loyalty': typeof AppLoyaltyRoute
   '/pay': typeof AppPayRoute
   '/requests': typeof AppRequestsRoute
   '/wallet': typeof AppWalletRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/technology': typeof TechnologyRoute
   '/_app/cards': typeof AppCardsRoute
   '/_app/enroll': typeof AppEnrollRoute
+  '/_app/loyalty': typeof AppLoyaltyRoute
   '/_app/pay': typeof AppPayRoute
   '/_app/requests': typeof AppRequestsRoute
   '/_app/wallet': typeof AppWalletRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/technology'
     | '/cards'
     | '/enroll'
+    | '/loyalty'
     | '/pay'
     | '/requests'
     | '/wallet'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/technology'
     | '/cards'
     | '/enroll'
+    | '/loyalty'
     | '/pay'
     | '/requests'
     | '/wallet'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/technology'
     | '/_app/cards'
     | '/_app/enroll'
+    | '/_app/loyalty'
     | '/_app/pay'
     | '/_app/requests'
     | '/_app/wallet'
@@ -328,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPayRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/loyalty': {
+      id: '/_app/loyalty'
+      path: '/loyalty'
+      fullPath: '/loyalty'
+      preLoaderRoute: typeof AppLoyaltyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/enroll': {
       id: '/_app/enroll'
       path: '/enroll'
@@ -348,6 +367,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppCardsRoute: typeof AppCardsRoute
   AppEnrollRoute: typeof AppEnrollRoute
+  AppLoyaltyRoute: typeof AppLoyaltyRoute
   AppPayRoute: typeof AppPayRoute
   AppRequestsRoute: typeof AppRequestsRoute
   AppWalletRoute: typeof AppWalletRoute
@@ -356,6 +376,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppCardsRoute: AppCardsRoute,
   AppEnrollRoute: AppEnrollRoute,
+  AppLoyaltyRoute: AppLoyaltyRoute,
   AppPayRoute: AppPayRoute,
   AppRequestsRoute: AppRequestsRoute,
   AppWalletRoute: AppWalletRoute,
@@ -379,13 +400,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
