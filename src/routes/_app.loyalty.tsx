@@ -292,6 +292,10 @@ function FullscreenCard({ card, onClose }: { card: Loyalty; onClose: () => void 
       <button onClick={fullscreen} className="absolute top-4 left-4 p-2"><Maximize2 className="h-5 w-5" /></button>
 
       <div className="text-center mb-6">
+        {card.logo_url && (
+          <img src={card.logo_url} alt="" onError={(e) => (e.currentTarget.style.display = "none")}
+            className="h-14 w-14 mx-auto mb-3 rounded-xl bg-white object-contain p-1.5" />
+        )}
         <div className="text-xs uppercase tracking-widest opacity-70">{card.card_type}</div>
         <h2 className="text-3xl font-display mt-1">{card.brand}</h2>
       </div>
