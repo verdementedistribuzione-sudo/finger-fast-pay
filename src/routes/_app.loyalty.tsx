@@ -91,8 +91,16 @@ function LoyaltyPage() {
                 <Trash2 className="h-4 w-4" />
               </span>
             </div>
-            <div className="mt-6 text-2xl font-display">{c.brand}</div>
-            <div className="mt-1 font-mono text-sm opacity-80">{c.card_number}</div>
+            <div className="mt-6 flex items-center gap-3">
+              {c.logo_url && (
+                <img src={c.logo_url} alt="" onError={(e) => ((e.currentTarget.style.display = "none"))}
+                  className="h-10 w-10 rounded-lg bg-white/90 object-contain p-1" />
+              )}
+              <div>
+                <div className="text-2xl font-display leading-tight">{c.brand}</div>
+                <div className="mt-1 font-mono text-sm opacity-80">{c.card_number}</div>
+              </div>
+            </div>
             <div className="mt-5">
               <BarcodeDisplay value={c.barcode_value} format={c.barcode_type} height={50} />
             </div>
