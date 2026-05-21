@@ -106,7 +106,7 @@ function Login() {
               </label>
               <label className="block">
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">Password</span>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
+                <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} required
                   className="mt-1 w-full h-11 px-4 rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-gold/40" />
               </label>
               <button type="submit" disabled={loading}
