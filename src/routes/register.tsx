@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { isBiometricSupported, registerBiometric } from "@/lib/webauthn";
 import { hashPin } from "@/lib/pin";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -132,12 +133,17 @@ function Field({ label, value, onChange, type = "text", required, minLength, max
   label: string; value: string; onChange: (v: string) => void; type?: string;
   required?: boolean; minLength?: number; maxLength?: number; inputMode?: "numeric" | "text";
 }) {
+  const cls = "mt-1 w-full h-11 px-4 rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-gold/40";
   return (
     <label className="block">
       <span className="text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required}
-        minLength={minLength} maxLength={maxLength} inputMode={inputMode}
-        className="mt-1 w-full h-11 px-4 rounded-xl border border-border bg-card focus:outline-none focus:ring-2 focus:ring-gold/40" />
+      {type === "password" ? (
+        <PasswordInput value={value} onChange={(e) => onChange(e.target.value)} required={required}
+          minLength={minLength} maxLength={maxLength} inputMode={inputMode} className={cls} />
+      ) : (
+        <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required}
+          minLength={minLength} maxLength={maxLength} inputMode={inputMode} className={cls} />
+      )}
     </label>
   );
 }

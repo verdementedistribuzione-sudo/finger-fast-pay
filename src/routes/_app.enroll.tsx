@@ -13,6 +13,7 @@ import { hashPin, verifyPin } from "@/lib/pin";
 import { FingerprintScan } from "@/components/FingerprintScan";
 import { logAudit } from "@/lib/audit";
 import { SecurityGate } from "@/components/SecurityGate";
+import { PasswordInput } from "@/components/PasswordInput";
 import { toast } from "sonner";
 import { AccountToolbar } from "@/components/AccountToolbar";
 import { EnrollStatusPanel } from "@/components/EnrollStatusPanel";
@@ -363,8 +364,7 @@ function EnrollPage() {
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">
                   Imposta PIN SCA (4–8 cifre)
                 </span>
-                <input
-                  type="password"
+                <PasswordInput
                   inputMode="numeric"
                   value={newPin}
                   onChange={(e) => setNewPin(e.target.value)}
@@ -388,8 +388,7 @@ function EnrollPage() {
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">
                   Verifica PIN
                 </span>
-                <input
-                  type="password"
+                <PasswordInput
                   inputMode="numeric"
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}

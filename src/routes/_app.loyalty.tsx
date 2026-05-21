@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { BarcodeScanner, type ScanResult } from "@/components/BarcodeScanner";
 import { BarcodeDisplay } from "@/components/BarcodeDisplay";
+import { dominantColor, guessLogoUrl } from "@/lib/dominant-color";
 
 export const Route = createFileRoute("/_app/loyalty")({
   component: LoyaltyPage,
@@ -20,6 +21,7 @@ type Loyalty = {
   barcode_type: string;
   barcode_value: string;
   color: string | null;
+  logo_url: string | null;
   expires_at: string | null;
   notes: string | null;
 };
@@ -32,7 +34,11 @@ const CARD_TYPES = [
   { id: "badge", label: "Badge", icon: BadgeCheck },
 ];
 
-const COLORS = ["#0f172a", "#7c2d12", "#1e3a8a", "#065f46", "#831843", "#78350f", "#3b0764", "#164e63"];
+const COLORS = [
+  "#0f172a", "#1e3a8a", "#1d4ed8", "#0369a1", "#0e7490", "#065f46", "#15803d", "#65a30d",
+  "#ca8a04", "#b45309", "#c2410c", "#dc2626", "#be123c", "#831843", "#a21caf", "#7e22ce",
+  "#4c1d95", "#3730a3", "#78350f", "#164e63", "#374151", "#111827", "#7c2d12", "#3b0764",
+];
 
 function LoyaltyPage() {
   const { user } = useAuth();
@@ -86,8 +92,16 @@ function LoyaltyPage() {
                 <Trash2 className="h-4 w-4" />
               </span>
             </div>
-            <div className="mt-6 text-2xl font-display">{c.brand}</div>
-            <div className="mt-1 font-mono text-sm opacity-80">{c.card_number}</div>
+            <div className="mt-6 flex items-center gap-3">
+              {c.logo_url && (
+                <img src={c.logo_url} alt="" onError={(e) => ((e.currentTarget.style.display = "none"))}
+                  className="h-10 w-10 rounded-lg bg-white/90 object-contain p-1" />
+              )}
+              <div>
+                <div className="text-2xl font-display leading-tight">{c.brand}</div>
+                <div className="mt-1 font-mono text-sm opacity-80">{c.card_number}</div>
+              </div>
+            </div>
             <div className="mt-5">
               <BarcodeDisplay value={c.barcode_value} format={c.barcode_type} height={50} />
             </div>
@@ -118,15 +132,29 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
   const [brand, setBrand] = useState("");
   const [number, setNumber] = useState("");
   const [color, setColor] = useState(COLORS[0]);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [expires, setExpires] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
-  function onScan(r: ScanResult) {
+  async function onScan(r: ScanResult) {
     setScanned(r);
     setNumber(r.value);
     setScanning(false);
     toast.success(`Codice ${r.format} rilevato`);
+    // Estrai colore dominante dal frame catturato
+    if (r.frame) {
+      try {
+        const c = await dominantColor(r.frame);
+        setColor(c);
+      } catch { /* ignore */ }
+    }
+  }
+
+  // Quando l'utente digita il brand, prova a indovinare il logo
+  function onBrandChange(v: string) {
+    setBrand(v);
+    setLogoUrl(guessLogoUrl(v));
   }
 
   async function save(e: React.FormEvent) {
@@ -142,6 +170,7 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
         barcode_type: scanned?.format || "CODE128",
         barcode_value: scanned?.value || number.trim(),
         color,
+        logo_url: logoUrl,
         expires_at: expires || null,
         notes: notes.trim() || null,
       });
@@ -198,7 +227,14 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
             </div>
           </div>
 
-          <Field label="Brand" value={brand} onChange={setBrand} placeholder="Esselunga, Decathlon…" />
+          <Field label="Brand" value={brand} onChange={onBrandChange} placeholder="Esselunga, Decathlon…" />
+          {logoUrl && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <img src={logoUrl} alt="" onError={(e) => (e.currentTarget.parentElement!.style.display = "none")}
+                className="h-8 w-8 rounded-md bg-white object-contain p-1 border border-border" />
+              Logo rilevato automaticamente
+            </div>
+          )}
           <Field label="Numero tessera" value={number} onChange={setNumber} mono />
           <Field label="Scadenza (opzionale)" value={expires} onChange={setExpires} placeholder="YYYY-MM-DD" />
           <Field label="Note" value={notes} onChange={setNotes} placeholder="" />
@@ -256,6 +292,10 @@ function FullscreenCard({ card, onClose }: { card: Loyalty; onClose: () => void 
       <button onClick={fullscreen} className="absolute top-4 left-4 p-2"><Maximize2 className="h-5 w-5" /></button>
 
       <div className="text-center mb-6">
+        {card.logo_url && (
+          <img src={card.logo_url} alt="" onError={(e) => (e.currentTarget.style.display = "none")}
+            className="h-14 w-14 mx-auto mb-3 rounded-xl bg-white object-contain p-1.5" />
+        )}
         <div className="text-xs uppercase tracking-widest opacity-70">{card.card_type}</div>
         <h2 className="text-3xl font-display mt-1">{card.brand}</h2>
       </div>

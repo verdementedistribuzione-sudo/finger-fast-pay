@@ -8,6 +8,7 @@ import { verifyPin } from "@/lib/pin";
 import { FingerprintScan } from "@/components/FingerprintScan";
 import { logAudit } from "@/lib/audit";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export const Route = createFileRoute("/_app/pay")({
   component: PayPage,
@@ -251,7 +252,7 @@ function PayPage() {
                 <p className="text-xs uppercase tracking-widest text-gold inline-flex items-center gap-1 justify-center">
                   <KeyRound className="h-3 w-3" /> PIN · fallback identità
                 </p>
-                <input type="password" inputMode="numeric" value={firstPin} onChange={(e) => setFirstPin(e.target.value)}
+                <PasswordInput inputMode="numeric" value={firstPin} onChange={(e) => setFirstPin(e.target.value)}
                   placeholder="••••" maxLength={8}
                   className="mt-4 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
                 <button onClick={firstPinSubmit} disabled={loading || firstPin.length < 4}
@@ -266,7 +267,7 @@ function PayPage() {
                 <p className="text-xs uppercase tracking-widest text-gold inline-flex items-center gap-1">
                   <KeyRound className="h-3 w-3" /> SCA · conferma PIN
                 </p>
-                <input type="password" inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)}
+                <PasswordInput inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)}
                   placeholder="••••" maxLength={8}
                   className="mt-4 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
                 <button onClick={secondFactor} disabled={loading || pin.length < 4}

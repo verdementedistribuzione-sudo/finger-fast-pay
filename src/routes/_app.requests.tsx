@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { hasCredential, verifyBiometric } from "@/lib/webauthn";
 import { verifyPin } from "@/lib/pin";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export const Route = createFileRoute("/_app/requests")({
   component: RequestsPage,
@@ -147,7 +148,7 @@ function RequestsPage() {
             <KeyRound className="h-8 w-8 text-gold" />
             <h2 className="mt-3 text-2xl font-display">Conferma con PIN</h2>
             <p className="mt-1 text-sm text-muted-foreground">Importo sopra soglia: SCA richiesta.</p>
-            <input type="password" inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)}
+            <PasswordInput inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)}
               placeholder="••••" maxLength={8}
               className="mt-6 w-full h-14 px-4 rounded-xl border border-border bg-background text-center font-display text-2xl tracking-[0.5em]" />
             <div className="mt-4 flex gap-3">

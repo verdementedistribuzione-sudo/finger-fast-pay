@@ -3,7 +3,7 @@ import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat, DecodeHintType, Result } from "@zxing/library";
 import { X, Zap, ZapOff, Loader2 } from "lucide-react";
 
-export type ScanResult = { value: string; format: string };
+export type ScanResult = { value: string; format: string; frame?: string };
 
 const FORMATS = [
   BarcodeFormat.QR_CODE,
@@ -52,7 +52,17 @@ export function BarcodeScanner({
           (result: Result | undefined) => {
             if (result && !stopped) {
               stopped = true;
-              onResult({ value: result.getText(), format: BarcodeFormat[result.getBarcodeFormat()] });
+              // cattura frame corrente per dominant color / preview
+              let frame: string | undefined;
+              try {
+                const v = videoRef.current!;
+                const c = document.createElement("canvas");
+                c.width = v.videoWidth;
+                c.height = v.videoHeight;
+                c.getContext("2d")!.drawImage(v, 0, 0);
+                frame = c.toDataURL("image/jpeg", 0.8);
+              } catch { /* ignore */ }
+              onResult({ value: result.getText(), format: BarcodeFormat[result.getBarcodeFormat()], frame });
               controls.stop();
             }
           },
