@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft, ScanLine } from "lucide-react";
+import { Shield, Settings as SettingsIcon, Users, Smartphone, Receipt, Loader2, ArrowLeft, ScanLine, LayoutDashboard, CreditCard, Ticket, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsAdmin } from "@/hooks/use-role";
@@ -11,13 +11,13 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin · FingerPay" }] }),
 });
 
-type Tab = "settings" | "users" | "devices" | "audit" | "sca_audit";
+type Tab = "ceo" | "settings" | "users" | "devices" | "audit" | "sca_audit";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: roleLoading } = useIsAdmin();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("settings");
+  const [tab, setTab] = useState<Tab>("ceo");
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -41,6 +41,7 @@ function AdminPage() {
   }
 
   const tabs: { id: Tab; label: string; icon: typeof SettingsIcon }[] = [
+    { id: "ceo", label: "Dashboard CEO", icon: LayoutDashboard },
     { id: "settings", label: "Soglie SCA", icon: SettingsIcon },
     { id: "users", label: "Utenti", icon: Users },
     { id: "devices", label: "Dispositivi", icon: Smartphone },
@@ -70,11 +71,129 @@ function AdminPage() {
       </nav>
 
       <div className="mt-8">
+        {tab === "ceo" && <CeoDashboardTab />}
         {tab === "settings" && <SettingsTab />}
         {tab === "users" && <UsersTab />}
         {tab === "devices" && <DevicesTab />}
         {tab === "audit" && <AuditTab />}
         {tab === "sca_audit" && <ScaAuditTab />}
+      </div>
+    </div>
+  );
+}
+
+function CeoDashboardTab() {
+  type Row = {
+    id: string;
+    full_name: string | null;
+    email: string | null;
+    created_at: string;
+    cards: number;
+    loyalty: number;
+    documents: number;
+    devices: number;
+  };
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const [{ data: profiles }, { data: cards }, { data: loyalty }, { data: docs }, { data: devs }] = await Promise.all([
+        supabase.from("profiles").select("id,full_name,email,created_at").order("created_at", { ascending: false }),
+        supabase.from("payment_cards").select("user_id"),
+        supabase.from("loyalty_cards").select("user_id,barcode_type"),
+        supabase.from("documents").select("user_id"),
+        supabase.from("user_devices").select("user_id"),
+      ]);
+      const count = <T extends { user_id: string }>(arr: T[] | null) => {
+        const m = new Map<string, number>();
+        (arr || []).forEach((r) => m.set(r.user_id, (m.get(r.user_id) || 0) + 1));
+        return m;
+      };
+      const c = count(cards), l = count(loyalty), d = count(docs), dv = count(devs);
+      setRows((profiles || []).map((p) => ({
+        id: p.id,
+        full_name: p.full_name,
+        email: p.email,
+        created_at: p.created_at,
+        cards: c.get(p.id) || 0,
+        loyalty: l.get(p.id) || 0,
+        documents: d.get(p.id) || 0,
+        devices: dv.get(p.id) || 0,
+      })));
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) return <div className="text-muted-foreground">Caricamento dashboard…</div>;
+
+  const totals = rows.reduce(
+    (acc, r) => ({
+      users: acc.users + 1,
+      cards: acc.cards + r.cards,
+      loyalty: acc.loyalty + r.loyalty,
+      documents: acc.documents + r.documents,
+    }),
+    { users: 0, cards: 0, loyalty: 0, documents: 0 },
+  );
+
+  const kpis = [
+    { label: "Utenti registrati", value: totals.users, icon: Users },
+    { label: "Carte di pagamento", value: totals.cards, icon: CreditCard },
+    { label: "Tessere & QR", value: totals.loyalty, icon: Ticket },
+    { label: "Documenti caricati", value: totals.documents, icon: FileText },
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((k) => (
+          <div key={k.label} className="p-5 rounded-2xl bg-card border border-border">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-[10px] uppercase tracking-widest">{k.label}</span>
+              <k.icon className="h-4 w-4 text-gold" />
+            </div>
+            <div className="mt-3 text-4xl font-display">{k.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-3xl border border-border bg-card overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <h2 className="font-display text-lg">Utenti & attività</h2>
+          <span className="text-xs text-muted-foreground">{rows.length} utenti</span>
+        </div>
+        <div className="overflow-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-secondary/50 text-xs uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th className="text-left p-4">Utente</th>
+                <th className="text-left p-4">Email</th>
+                <th className="text-left p-4">Registrato</th>
+                <th className="text-right p-4">Carte</th>
+                <th className="text-right p-4">Tessere/QR</th>
+                <th className="text-right p-4">Documenti</th>
+                <th className="text-right p-4">Dispositivi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 && (
+                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Nessun utente.</td></tr>
+              )}
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-border">
+                  <td className="p-4">{r.full_name || "—"}</td>
+                  <td className="p-4 text-muted-foreground">{r.email || "—"}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(r.created_at).toLocaleDateString("it-IT")}</td>
+                  <td className="p-4 text-right font-display">{r.cards}</td>
+                  <td className="p-4 text-right font-display">{r.loyalty}</td>
+                  <td className="p-4 text-right font-display">{r.documents}</td>
+                  <td className="p-4 text-right font-display">{r.devices}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
