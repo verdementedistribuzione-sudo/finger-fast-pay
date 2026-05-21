@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { BarcodeScanner, type ScanResult } from "@/components/BarcodeScanner";
 import { BarcodeDisplay } from "@/components/BarcodeDisplay";
+import { dominantColor, guessLogoUrl } from "@/lib/dominant-color";
 
 export const Route = createFileRoute("/_app/loyalty")({
   component: LoyaltyPage,
@@ -32,7 +33,11 @@ const CARD_TYPES = [
   { id: "badge", label: "Badge", icon: BadgeCheck },
 ];
 
-const COLORS = ["#0f172a", "#7c2d12", "#1e3a8a", "#065f46", "#831843", "#78350f", "#3b0764", "#164e63"];
+const COLORS = [
+  "#0f172a", "#1e3a8a", "#1d4ed8", "#0369a1", "#0e7490", "#065f46", "#15803d", "#65a30d",
+  "#ca8a04", "#b45309", "#c2410c", "#dc2626", "#be123c", "#831843", "#a21caf", "#7e22ce",
+  "#4c1d95", "#3730a3", "#78350f", "#164e63", "#374151", "#111827", "#7c2d12", "#3b0764",
+];
 
 function LoyaltyPage() {
   const { user } = useAuth();
