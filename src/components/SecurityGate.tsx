@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { verifyPin } from "@/lib/pin";
 import { toast } from "sonner";
 import { AccountToolbar } from "./AccountToolbar";
+import { PasswordInput } from "./PasswordInput";
 
 type Step = "password" | "pin" | "permission" | "unlocked";
 
@@ -136,8 +137,7 @@ export function SecurityGate({
               <span className="text-xs uppercase tracking-widest text-muted-foreground inline-flex items-center gap-2">
                 <Lock className="h-3 w-3" /> Conferma password
               </span>
-              <input
-                type="password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -160,8 +160,7 @@ export function SecurityGate({
               <span className="text-xs uppercase tracking-widest text-muted-foreground inline-flex items-center gap-2">
                 <KeyRound className="h-3 w-3" /> Inserisci PIN SCA
               </span>
-              <input
-                type="password"
+              <PasswordInput
                 inputMode="numeric"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
