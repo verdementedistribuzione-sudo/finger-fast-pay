@@ -132,15 +132,29 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
   const [brand, setBrand] = useState("");
   const [number, setNumber] = useState("");
   const [color, setColor] = useState(COLORS[0]);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [expires, setExpires] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
-  function onScan(r: ScanResult) {
+  async function onScan(r: ScanResult) {
     setScanned(r);
     setNumber(r.value);
     setScanning(false);
     toast.success(`Codice ${r.format} rilevato`);
+    // Estrai colore dominante dal frame catturato
+    if (r.frame) {
+      try {
+        const c = await dominantColor(r.frame);
+        setColor(c);
+      } catch { /* ignore */ }
+    }
+  }
+
+  // Quando l'utente digita il brand, prova a indovinare il logo
+  function onBrandChange(v: string) {
+    setBrand(v);
+    setLogoUrl(guessLogoUrl(v));
   }
 
   async function save(e: React.FormEvent) {
@@ -156,6 +170,7 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
         barcode_type: scanned?.format || "CODE128",
         barcode_value: scanned?.value || number.trim(),
         color,
+        logo_url: logoUrl,
         expires_at: expires || null,
         notes: notes.trim() || null,
       });
