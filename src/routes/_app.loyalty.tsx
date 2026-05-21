@@ -227,7 +227,14 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
             </div>
           </div>
 
-          <Field label="Brand" value={brand} onChange={setBrand} placeholder="Esselunga, Decathlon…" />
+          <Field label="Brand" value={brand} onChange={onBrandChange} placeholder="Esselunga, Decathlon…" />
+          {logoUrl && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <img src={logoUrl} alt="" onError={(e) => (e.currentTarget.parentElement!.style.display = "none")}
+                className="h-8 w-8 rounded-md bg-white object-contain p-1 border border-border" />
+              Logo rilevato automaticamente
+            </div>
+          )}
           <Field label="Numero tessera" value={number} onChange={setNumber} mono />
           <Field label="Scadenza (opzionale)" value={expires} onChange={setExpires} placeholder="YYYY-MM-DD" />
           <Field label="Note" value={notes} onChange={setNotes} placeholder="" />
