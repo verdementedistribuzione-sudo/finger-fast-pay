@@ -4,6 +4,7 @@ import { Fingerprint, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { hasCredential, isBiometricSupported, verifyBiometric } from "@/lib/webauthn";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export const Route = createFileRoute("/login")({
   component: Login,
