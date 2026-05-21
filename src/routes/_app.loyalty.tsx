@@ -21,6 +21,7 @@ type Loyalty = {
   barcode_type: string;
   barcode_value: string;
   color: string | null;
+  logo_url: string | null;
   expires_at: string | null;
   notes: string | null;
 };
