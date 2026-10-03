@@ -355,6 +355,78 @@ export type Database = {
         }
         Relationships: []
       }
+      webauthn_challenges: {
+        Row: {
+          challenge: string
+          created_at: string
+          expires_at: string
+          id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          challenge: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          challenge?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webauthn_credentials: {
+        Row: {
+          aaguid: string | null
+          attestation_fmt: string | null
+          backed_up: boolean | null
+          counter: number
+          created_at: string
+          credential_id: string
+          device_type: string | null
+          id: string
+          last_used_at: string | null
+          public_key: string
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          aaguid?: string | null
+          attestation_fmt?: string | null
+          backed_up?: boolean | null
+          counter?: number
+          created_at?: string
+          credential_id: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key: string
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          aaguid?: string | null
+          attestation_fmt?: string | null
+          backed_up?: boolean | null
+          counter?: number
+          created_at?: string
+          credential_id?: string
+          device_type?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
