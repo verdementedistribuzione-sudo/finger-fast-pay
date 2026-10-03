@@ -33,7 +33,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-3xl">Qualcosa è andato storto</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
         <button
           onClick={() => { router.invalidate(); reset(); }}
           className="mt-6 px-6 py-2 rounded-full bg-gradient-gold text-primary-foreground text-sm font-medium"
