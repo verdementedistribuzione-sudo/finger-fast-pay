@@ -16,7 +16,9 @@ export async function ocrCard(
   imageDataUrl: string,
   onProgress?: (p: number) => void,
 ): Promise<CardOCR> {
-  const { data } = await Tesseract.recognize(imageDataUrl, "eng", {
+  let input = imageDataUrl;
+  try { input = await autoCropCard(imageDataUrl); } catch { /* usa originale */ }
+  const { data } = await Tesseract.recognize(input, "eng", {
     logger: (m) => {
       if (m.status === "recognizing text" && onProgress) onProgress(m.progress);
     },
