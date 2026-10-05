@@ -12,14 +12,17 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as GdprRouteImport } from './routes/gdpr'
 import { Route as InvestorsRouteImport } from './routes/investors'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MerchantRouteImport } from './routes/merchant'
 import { Route as MerchantsRouteImport } from './routes/merchants'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TechnologyRouteImport } from './routes/technology'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AppCardsRouteImport } from './routes/_app.cards'
 import { Route as AppEnrollRouteImport } from './routes/_app.enroll'
 import { Route as AppLoyaltyRouteImport } from './routes/_app.loyalty'
@@ -39,6 +42,11 @@ const AppRoute = AppRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GdprRoute = GdprRouteImport.update({
+  id: '/gdpr',
+  path: '/gdpr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorsRoute = InvestorsRouteImport.update({
@@ -61,6 +69,11 @@ const MerchantsRoute = MerchantsRouteImport.update({
   path: '/merchants',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -79,6 +92,11 @@ const SecurityRoute = SecurityRouteImport.update({
 const TechnologyRoute = TechnologyRouteImport.update({
   id: '/technology',
   path: '/technology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppCardsRoute = AppCardsRouteImport.update({
@@ -115,14 +133,17 @@ const AppWalletRoute = AppWalletRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/gdpr': typeof GdprRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
   '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/terms': typeof TermsRoute
   '/cards': typeof AppCardsRoute
   '/enroll': typeof AppEnrollRoute
   '/loyalty': typeof AppLoyaltyRoute
@@ -133,14 +154,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/gdpr': typeof GdprRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
   '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/terms': typeof TermsRoute
   '/cards': typeof AppCardsRoute
   '/enroll': typeof AppEnrollRoute
   '/loyalty': typeof AppLoyaltyRoute
@@ -153,14 +177,17 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/admin': typeof AdminRoute
+  '/gdpr': typeof GdprRoute
   '/investors': typeof InvestorsRoute
   '/login': typeof LoginRoute
   '/merchant': typeof MerchantRoute
   '/merchants': typeof MerchantsRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
+  '/terms': typeof TermsRoute
   '/_app/cards': typeof AppCardsRoute
   '/_app/enroll': typeof AppEnrollRoute
   '/_app/loyalty': typeof AppLoyaltyRoute
@@ -173,14 +200,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/gdpr'
     | '/investors'
     | '/login'
     | '/merchant'
     | '/merchants'
+    | '/privacy'
     | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/terms'
     | '/cards'
     | '/enroll'
     | '/loyalty'
@@ -191,14 +221,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/gdpr'
     | '/investors'
     | '/login'
     | '/merchant'
     | '/merchants'
+    | '/privacy'
     | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/terms'
     | '/cards'
     | '/enroll'
     | '/loyalty'
@@ -210,14 +243,17 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/admin'
+    | '/gdpr'
     | '/investors'
     | '/login'
     | '/merchant'
     | '/merchants'
+    | '/privacy'
     | '/register'
     | '/roadmap'
     | '/security'
     | '/technology'
+    | '/terms'
     | '/_app/cards'
     | '/_app/enroll'
     | '/_app/loyalty'
@@ -230,14 +266,17 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AdminRoute: typeof AdminRoute
+  GdprRoute: typeof GdprRoute
   InvestorsRoute: typeof InvestorsRoute
   LoginRoute: typeof LoginRoute
   MerchantRoute: typeof MerchantRoute
   MerchantsRoute: typeof MerchantsRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   RoadmapRoute: typeof RoadmapRoute
   SecurityRoute: typeof SecurityRoute
   TechnologyRoute: typeof TechnologyRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -261,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gdpr': {
+      id: '/gdpr'
+      path: '/gdpr'
+      fullPath: '/gdpr'
+      preLoaderRoute: typeof GdprRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investors': {
@@ -291,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MerchantsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -317,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/technology'
       fullPath: '/technology'
       preLoaderRoute: typeof TechnologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/cards': {
@@ -388,14 +448,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AdminRoute: AdminRoute,
+  GdprRoute: GdprRoute,
   InvestorsRoute: InvestorsRoute,
   LoginRoute: LoginRoute,
   MerchantRoute: MerchantRoute,
   MerchantsRoute: MerchantsRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   RoadmapRoute: RoadmapRoute,
   SecurityRoute: SecurityRoute,
   TechnologyRoute: TechnologyRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
