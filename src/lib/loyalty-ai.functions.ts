@@ -27,27 +27,16 @@ export const recognizeLoyaltyCard = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new Error("AI non configurata");
     const { createOpenAI } = await import("@ai-sdk/openai");
     const { streamText } = await import("ai");
     const provider = createOpenAI({
-      baseURL: "https://ai.gateway.lovable.dev/v1",
       apiKey,
-      headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
     });
     const result = streamText({
-      model: provider.responses("openai/gpt-6-astra"),
+      model: provider(process.env.OPENAI_MODEL ?? "gpt-4o-mini"),
       messages: [{ role: "user", content: [{ type: "text", text: PROMPT }, { type: "image", image: data.image }] }],
-      providerOptions: {
-        openai: {
-          forceReasoning: true,
-          reasoningEffort: "low",
-          reasoningSummary: "auto",
-          store: false,
-          include: ["reasoning.encrypted_content"],
-        },
-      },
     });
     let text: string;
     try {

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 /**
  * Avviso critico: WebAuthn (Face ID / Touch ID / impronta) NON funziona
- * dentro l'iframe della preview di Lovable perché il browser blocca le
+ * dentro l'iframe (anteprima incorporata) perché il browser blocca le
  * Permissions Policy `publickey-credentials-*` negli iframe cross-origin.
  * L'utente DEVE aprire la pagina in una scheda nativa del browser del
  * telefono (Safari su iPhone, Chrome su Android) per vedere il prompt reale.

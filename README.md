@@ -166,16 +166,6 @@ Importante:
 
 Evita affermazioni tecnicamente scorrette. Non dire che due dita sono automaticamente 2FA PSD2: specifica che due dita sono autenticazione biometrica rafforzata, mentre per SCA normativa serve combinare biometria con PIN, app o dispositivo. Non dire che l’impronta viene semplicemente “hashata” come una password: usa il concetto di template biometrico cifrato, cancellable biometrics e matching sicuro. vogli ouun interfaccia moderla, lussuona e moto aestetich
 
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/2ccddcca-1401-4976-9d1e-a946ea9d5043).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
 ## Development
 
 Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
