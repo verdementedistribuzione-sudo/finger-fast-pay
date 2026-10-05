@@ -19,6 +19,7 @@ import { Route as MerchantRouteImport } from './routes/merchant'
 import { Route as MerchantsRouteImport } from './routes/merchants'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TechnologyRouteImport } from './routes/technology'
@@ -77,6 +78,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoadmapRoute = RoadmapRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/merchants': typeof MerchantsRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/merchants': typeof MerchantsRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/merchants': typeof MerchantsRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/security': typeof SecurityRoute
   '/technology': typeof TechnologyRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/merchants'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/roadmap'
     | '/security'
     | '/technology'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/merchants'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/roadmap'
     | '/security'
     | '/technology'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/merchants'
     | '/privacy'
     | '/register'
+    | '/reset-password'
     | '/roadmap'
     | '/security'
     | '/technology'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   MerchantsRoute: typeof MerchantsRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RoadmapRoute: typeof RoadmapRoute
   SecurityRoute: typeof SecurityRoute
   TechnologyRoute: typeof TechnologyRoute
@@ -349,6 +362,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/roadmap': {
@@ -455,6 +475,7 @@ const rootRouteChildren: RootRouteChildren = {
   MerchantsRoute: MerchantsRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RoadmapRoute: RoadmapRoute,
   SecurityRoute: SecurityRoute,
   TechnologyRoute: TechnologyRoute,

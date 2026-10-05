@@ -12,7 +12,6 @@ export default defineConfig(({ command, mode }) => {
   );
   return {
     define,
-    css: { transformer: "lightningcss" },
     resolve: {
       alias: { "@": `${process.cwd()}/src` },
       dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],

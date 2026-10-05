@@ -19,7 +19,7 @@ export function AccountToolbar({ className = "" }: { className?: string }) {
     setLoading("reset");
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: window.location.origin + "/login",
+        redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
       toast.success("Email di ripristino inviata a " + user.email);

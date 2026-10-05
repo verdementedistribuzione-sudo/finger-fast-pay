@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Fingerprint, Loader2, Mail } from "lucide-react";
+import { Fingerprint, KeyRound, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { hasCredential, isBiometricSupported, verifyBiometric } from "@/lib/webauthn";
 import { toast } from "sonner";
@@ -51,6 +51,11 @@ function Login() {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       const uid = data.user.id;
+      const pendingPin = localStorage.getItem(`pending_pin_hash:${uid}`);
+      if (pendingPin) {
+        const { error: pinError } = await supabase.from("profiles").update({ pin_hash: pendingPin }).eq("id", uid);
+        if (!pinError) localStorage.removeItem(`pending_pin_hash:${uid}`);
+      }
       if (hasCredential(uid)) {
         try { await verifyBiometric(uid); toast.success("Identità confermata"); }
         catch { toast.warning("Biometria non confermata"); }
@@ -69,7 +74,21 @@ function Login() {
         email, options: { emailRedirectTo: window.location.origin + "/wallet" },
       });
       if (error) throw error;
-      toast.success("Link di ripristino inviato via email");
+      toast.success("Link di accesso inviato via email");
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally { setLoading(false); }
+  }
+
+  async function forgotPassword() {
+    if (!email) return toast.error("Inserisci la tua email");
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+      if (error) throw error;
+      toast.success("Email per reimpostare la password inviata a " + email);
     } catch (err) {
       toast.error((err as Error).message);
     } finally { setLoading(false); }
@@ -119,7 +138,11 @@ function Login() {
             <div className="mt-6 text-center text-xs text-muted-foreground">— ripristino sicuro —</div>
             <button onClick={sendOtp} disabled={loading}
               className="mt-3 w-full h-11 rounded-full bg-secondary text-sm inline-flex items-center justify-center gap-2">
-              <Mail className="h-4 w-4" /> Invia link via email
+              <Mail className="h-4 w-4" /> Invia link di accesso via email
+            </button>
+            <button onClick={forgotPassword} disabled={loading}
+              className="mt-3 w-full h-11 rounded-full border border-border text-sm inline-flex items-center justify-center gap-2">
+              <KeyRound className="h-4 w-4" /> Password dimenticata?
             </button>
             <p className="mt-6 text-sm text-muted-foreground text-center">
               Non hai un account? <Link to="/register" className="text-gold">Registrati</Link>

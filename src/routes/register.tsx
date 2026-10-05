@@ -41,6 +41,14 @@ function Register() {
 
       // Store PIN hash + default user role
       const pinHash = await hashPin(data.user.id, pin);
+      if (!data.session) {
+        // Email confirmation is on: no session yet, so the profile can't be written.
+        // Keep the PIN hash on this device and save it at the first login.
+        localStorage.setItem(`pending_pin_hash:${data.user.id}`, pinHash);
+        toast.success("Account creato! Controlla la tua email e clicca il link di conferma, poi accedi.");
+        navigate({ to: "/login" });
+        return;
+      }
       await supabase.from("profiles").update({ pin_hash: pinHash }).eq("id", data.user.id);
 
       const supported = await isBiometricSupported();
