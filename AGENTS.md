@@ -1,0 +1,2 @@
+- Offline wallet data is encrypted client-side (AES-GCM, PBKDF2 key from user password) in src/lib/local-vault.ts; the key lives only in memory — server never sees it.
+- AI card recognition runs in an authenticated server function (src/lib/loyalty-ai.functions.ts) so the AI key stays server-side.
