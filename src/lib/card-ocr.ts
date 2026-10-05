@@ -74,3 +74,44 @@ function luhn(num: string): boolean {
   }
   return sum % 10 === 0;
 }
+
+/**
+ * Auto-crop on-device: rileva i bordi della carta (gradiente di luminosità
+ * su righe/colonne) e ritaglia l'area della carta. Ritorna una dataURL.
+ */
+export async function autoCropCard(dataUrl: string): Promise<string> {
+  const img = await new Promise<HTMLImageElement>((res, rej) => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.onerror = rej;
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const ctx = c.getContext("2d")!;
+  ctx.drawImage(img, 0, 0, w, h);
+  const px = ctx.getImageData(0, 0, w, h).data;
+  const lum = (x: number, y: number) => { const i = (y * w + x) * 4; return px[i] * 0.3 + px[i + 1] * 0.59 + px[i + 2] * 0.11; };
+  const col = new Float32Array(w), row = new Float32Array(h);
+  for (let y = 1; y < h - 1; y += 2) for (let x = 1; x < w - 1; x += 2) {
+    const gx = Math.abs(lum(x + 1, y) - lum(x - 1, y));
+    const gy = Math.abs(lum(x, y + 1) - lum(x, y - 1));
+    col[x] += gx; row[y] += gy;
+  }
+  const edge = (a: Float32Array, from: number, to: number) => {
+    let best = from, bv = -1;
+    const step = from < to ? 1 : -1;
+    for (let i = from; i !== to; i += step) if (a[i] > bv) { bv = a[i]; best = i; }
+    return best;
+  };
+  const left = edge(col, 1, Math.floor(w * 0.35)), right = edge(col, w - 2, Math.floor(w * 0.65));
+  const top = edge(row, 1, Math.floor(h * 0.35)), bottom = edge(row, h - 2, Math.floor(h * 0.65));
+  const cw = right - left, ch = bottom - top;
+  if (cw < w * 0.3 || ch < h * 0.2) return dataUrl;
+  const out = document.createElement("canvas");
+  out.width = cw; out.height = ch;
+  out.getContext("2d")!.drawImage(c, left, top, cw, ch, 0, 0, cw, ch);
+  return out.toDataURL("image/jpeg", 0.9);
+}
