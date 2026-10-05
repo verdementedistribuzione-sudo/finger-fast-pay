@@ -7,6 +7,11 @@ import { toast } from "sonner";
 import { BarcodeScanner, type ScanResult } from "@/components/BarcodeScanner";
 import { BarcodeDisplay } from "@/components/BarcodeDisplay";
 import { dominantColor, guessLogoUrl } from "@/lib/dominant-color";
+import { useServerFn } from "@tanstack/react-start";
+import { recognizeLoyaltyCard } from "@/lib/loyalty-ai.functions";
+import { autoCropCard } from "@/lib/card-ocr";
+import { isVaultUnlocked, unlockVault, vaultGet, vaultSet } from "@/lib/local-vault";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export const Route = createFileRoute("/_app/loyalty")({
   component: LoyaltyPage,
@@ -46,9 +51,31 @@ function LoyaltyPage() {
   const [adding, setAdding] = useState(false);
   const [viewing, setViewing] = useState<Loyalty | null>(null);
 
+  const [unlocked, setUnlocked] = useState(false);
+  const [vaultPwd, setVaultPwd] = useState("");
+  const [offline, setOffline] = useState(false);
+
   async function load() {
-    const { data } = await supabase.from("loyalty_cards").select("*").order("created_at", { ascending: false });
-    setItems((data || []) as Loyalty[]);
+    const { data, error } = await supabase.from("loyalty_cards").select("*").order("created_at", { ascending: false });
+    if (error || !data) {
+      const cached = user ? await vaultGet<Loyalty[]>(user.id, "loyalty").catch(() => null) : null;
+      if (cached) { setItems(cached); setOffline(true); }
+      return;
+    }
+    setOffline(false);
+    setItems(data as Loyalty[]);
+    if (user) await vaultSet(user.id, "loyalty", data);
+  }
+
+  async function unlock(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) return;
+    try {
+      await unlockVault(user.id, vaultPwd);
+      setVaultPwd(""); setUnlocked(true);
+      toast.success("Wallet offline cifrato sbloccato");
+      load();
+    } catch (err) { toast.error((err as Error).message); }
   }
   useEffect(() => { if (user) load(); }, [user]);
 
@@ -75,6 +102,22 @@ function LoyaltyPage() {
           <Plus className="h-4 w-4" /> Nuova tessera
         </button>
       </header>
+
+      {user && !(unlocked || isVaultUnlocked(user.id)) ? (
+        <form onSubmit={unlock} className="mt-6 p-4 rounded-2xl border border-border bg-card flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[200px]">
+            <div className="text-sm font-medium">Wallet offline cifrato</div>
+            <div className="text-xs text-muted-foreground mb-2">Inserisci la password: le tessere vengono cifrate (AES-GCM) su questo dispositivo e restano disponibili offline.</div>
+            <PasswordInput value={vaultPwd} onChange={(e) => setVaultPwd(e.target.value)} placeholder="Password"
+              className="w-full h-11 px-4 rounded-xl border border-border bg-background" />
+          </div>
+          <button className="h-11 px-5 rounded-full bg-gradient-gold text-primary-foreground text-sm font-medium">Sblocca</button>
+        </form>
+      ) : (
+        <div className="mt-6 text-xs text-muted-foreground">
+          {offline ? "Modalità offline: dati letti dal wallet cifrato locale." : "Copia cifrata locale attiva (AES-GCM)."}
+        </div>
+      )}
 
       <div className="mt-10 grid sm:grid-cols-2 gap-4">
         {items.length === 0 && (
@@ -136,6 +179,33 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
   const [expires, setExpires] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const recognize = useServerFn(recognizeLoyaltyCard);
+
+  async function onPhoto(file: File) {
+    setAiBusy(true);
+    try {
+      const raw = await new Promise<string>((res, rej) => {
+        const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file);
+      });
+      const img = await autoCropCard(raw).catch(() => raw);
+      const d = await recognize({ data: { image: img } });
+      if (d.brand) onBrandChange(d.brand);
+      if (d.card_type && CARD_TYPES.some((t) => t.id === d.card_type)) setCardType(d.card_type);
+      const num = d.card_number || d.barcode_value;
+      if (num) setNumber(num);
+      if (d.barcode_value) setScanned({ value: d.barcode_value, format: d.barcode_type || "CODE_128" });
+      if (d.expires_at) setExpires(d.expires_at);
+      if (d.color && /^#[0-9a-f]{6}$/i.test(d.color)) setColor(d.color);
+      const extra = [d.holder && `Titolare: ${d.holder}`, d.notes].filter(Boolean).join(" · ");
+      if (extra) setNotes(extra);
+      toast.success("Tessera riconosciuta dall'AI");
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setAiBusy(false);
+    }
+  }
 
   async function onScan(r: ScanResult) {
     setScanned(r);
@@ -211,6 +281,12 @@ function AddLoyaltyModal({ userId, onClose, onAdded }: { userId: string; onClose
             Scansiona barcode o QR
           </button>
         )}
+
+        <label className="mt-3 w-full h-14 rounded-xl border border-dashed border-border hover:border-gold flex items-center justify-center gap-2 text-sm cursor-pointer">
+          {aiBusy ? "Riconoscimento in corso…" : "Foto tessera: riconosci con AI"}
+          <input type="file" accept="image/*" capture="environment" className="hidden" disabled={aiBusy}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.target.value = ""; }} />
+        </label>
 
         <form onSubmit={save} className="mt-5 space-y-3">
           <div>
